@@ -21,7 +21,9 @@
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  
+
+  /* ===== KUNCI MASALAH RELOAD (JANGAN DIHAPUS) ===== */
+  auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 </script>
 
 <style>
@@ -122,11 +124,11 @@ function save(){
   localStorage["cash_"+key()]=cash
   localStorage["data_"+key()]=JSON.stringify(data)
 }
-  
-const atmEl = document.getElementById("atm")
-const cashEl = document.getElementById("cash")
-const total = document.getElementById("total")
-const list = document.getElementById("list")
+
+const atmEl=document.getElementById("atm")
+const cashEl=document.getElementById("cash")
+const total=document.getElementById("total")
+const list=document.getElementById("list")
 
 function render(){
   atmEl.textContent=atm
@@ -134,6 +136,7 @@ function render(){
   total.textContent=atm+cash
   list.innerHTML=data.map(d=>`<tr><td>${d.tgl}</td><td>${d.ket}</td><td>${d.metode}</td><td>${d.nominal}</td></tr>`).join("")
 }
+
 bulanEl.onchange=tahunEl.onchange=()=>{periode.bulan=bulanEl.value;periode.tahun=tahunEl.value;load()}
 
 function openForm(){modal.style.display="flex"}
@@ -151,32 +154,17 @@ function login(){
   .catch(e=>alert(e.message))
 }
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    welcome.style.display = "none";
-    main.style.display = "block";
-    load();
-  } else {
-    welcome.style.display = "flex";
-    main.style.display = "none";
+auth.onAuthStateChanged(user=>{
+  if(user){
+    welcome.style.display="none"
+    main.style.display="block"
+    load()
+  }else{
+    welcome.style.display="flex"
+    main.style.display="none"
   }
-});
-// Peringatan sebelum refresh / close
-window.addEventListener("beforeunload", function (e) {
-  e.preventDefault();
-  e.returnValue = "";
-});
-
-// Paksa logout saat halaman ditinggal
-window.addEventListener("unload", function () {
-  auth.signOut();
-});
-
+})
 </script>
 
 </body>
 </html>
-
-
-
-
