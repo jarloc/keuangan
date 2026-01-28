@@ -136,7 +136,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -316,28 +316,44 @@ let editIndex = null; // Penting: Buat nandaian baris mana yang lagi di edit
 // 2. Fungsi buat mati-nyalain mode
 function toggleMode(tipe) {
     if (tipe === 'edit') {
-        modeEdit = !modeEdit; // Kalo tadi mati jadi nyala, kalo nyala jadi mati
-        modeHapus = false;    // Matiin mode hapus biar gak bentrok
-    } else if (tipe === 'hapus') {
+        modeEdit = !modeEdit;
+        modeHapus = false;
+    } else {
         modeHapus = !modeHapus;
-        modeEdit = false;     // Matiin mode edit biar gak bentrok
+        modeEdit = false;
     }
-    
-    // 3. Update Visual Tombol (Biar tau mana yang lagi aktif)
-    const btnEdit = document.getElementById("btnModeEdit");
-    const btnHapus = document.getElementById("btnModeHapus");
 
-    // Efek buat tombol EDIT
-    btnEdit.textContent = modeEdit ? "SELESAI" : "EDIT";
-    btnEdit.style.background = modeEdit ? "blue" : "transparent";
-    btnEdit.style.color = modeEdit ? "white" : "blue";
+    const bE = document.getElementById("btnModeEdit");
+    const bH = document.getElementById("btnModeHapus");
 
-    // Efek buat tombol HAPUS
-    btnHapus.textContent = modeHapus ? "SELESAI" : "HAPUS";
-    btnHapus.style.background = modeHapus ? "red" : "transparent";
-    btnHapus.style.color = modeHapus ? "white" : "red";
+    // Logika Tombol EDIT
+    if (modeEdit) {
+        bE.style.background = "blue";
+        bE.style.color = "white";
+        bE.style.borderColor = "blue";
+        bE.textContent = "SELESAI";
+    } else {
+        // Balikkan ke GOLD
+        bE.style.background = "transparent";
+        bE.style.color = "var(--gold)";
+        bE.style.borderColor = "var(--gold)";
+        bE.textContent = "EDIT";
+    }
 
-    // 4. Gambar ulang tabelnya (biar tombol di tiap baris muncul/hilang)
+    // Logika Tombol HAPUS
+    if (modeHapus) {
+        bH.style.background = "red";
+        bH.style.color = "white";
+        bH.style.borderColor = "red";
+        bH.textContent = "SELESAI";
+    } else {
+        // Balikkan ke GOLD
+        bH.style.background = "transparent";
+        bH.style.color = "var(--gold)";
+        bH.style.borderColor = "var(--gold)";
+        bH.textContent = "HAPUS";
+    }
+
     render();
 }
   function bukaEdit(index) {
@@ -431,6 +447,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
