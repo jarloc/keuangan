@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Personal Finance</title>
+<title>KEUANGAN PRIBADI</title>
 
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -48,7 +48,8 @@ th,td{padding:8px;border-bottom:1px solid #333}
 
 <!-- ===== WELCOME SCREEN ===== -->
 <div id="welcome">
-  <h1 style="color:var(--gold)">WELCOME</h1>
+  <h1 style="color:var(--gold)">KEUANGAN</h1>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.0.8</b> . Copyright © 2026 . All Rights Reserved.</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -57,7 +58,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <!-- ===== MAIN APP ===== -->
 <div id="main">
 <header>
-<h2 style="color:var(--gold)">PERSONAL FINANCE</h2>
+<h2 style="color:var(--gold)">KEUANGAN PRIBADI</h2>
 <select id="bulan"></select>
 <select id="tahun"></select>
 </header>
@@ -160,11 +161,22 @@ auth.onAuthStateChanged(user => {
     main.style.display = "none";
   }
 });
+// Peringatan sebelum refresh / close
+window.addEventListener("beforeunload", function (e) {
+  e.preventDefault();
+  e.returnValue = "";
+});
+
+// Paksa logout saat halaman ditinggal
+window.addEventListener("unload", function () {
+  auth.signOut();
+});
 
 </script>
 
 </body>
 </html>
+
 
 
 
