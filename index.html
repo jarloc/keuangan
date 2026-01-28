@@ -5,90 +5,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Personal Finance</title>
 
-<!-- Firebase -->
+<!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCcBqGjq9ZN4Cv-pDfNqaJ2QxnqSqzzPHE",
+  authDomain: "keuangan-3ae83.firebaseapp.com",
+  projectId: "keuangan-3ae83",
+  storageBucket: "keuangan-3ae83.firebasestorage.app",
+  messagingSenderId: "988326680959",
+  appId: "1:988326680959:web:c2c39e4bed6cdf9c66a24a"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+</script>
+
 <style>
-:root{
-  --gold:#d4af37;
-  --black:#0b0b0b;
-  --white:#fff;
-}
-body,html{
-  margin:0;padding:0;font-family:Segoe UI,Arial;height:100%;background:linear-gradient(135deg,#000,#111,#000);color:var(--white);
-  overflow-x:hidden;
-}
-button{cursor:pointer;transition:.2s;border-radius:12px;padding:10px 16px;border:1px solid var(--gold);background:transparent;color:var(--gold);}
-button:hover{box-shadow:0 0 20px rgba(212,175,55,.8);}
-button:active{transform:scale(.95);}
-.fab{position:fixed;right:25px;bottom:25px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#fff2b0);color:#000;font-size:28px;border:none;box-shadow:0 0 25px rgba(212,175,55,.9);animation:float 3s ease-in-out infinite;}
-@keyframes float{50%{transform:translateY(-10px);}}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;}
-.modal-content{background:#000;padding:20px;border-radius:16px;border:1px solid var(--gold);width:320px;transform:translateY(50px);transition:transform .3s;}
-.modal.show{opacity:1;}
-.modal.show .modal-content{transform:translateY(0);}
-input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;border:1px solid #333;border-radius:8px;}
-
-/* ===== Welcome Screen ===== */
-#welcome{display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;animation:fadeIn 1s ease forwards;}
-#welcome.fadeOut{animation:fadeOut 0.7s ease forwards;}
-#welcome h1{color:var(--gold);letter-spacing:2px;margin-bottom:20px;}
-#welcome input{margin:5px 0;width:250px;padding:10px;border-radius:10px;border:1px solid rgba(212,175,55,.5);}
-#welcome button{width:150px;margin-top:10px;animation:glow 2s infinite alternate;}
-@keyframes glow{0%{box-shadow:0 0 5px rgba(212,175,55,.5);}100%{box-shadow:0 0 25px rgba(212,175,55,1);}}
-@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
-@keyframes fadeOut{0%{opacity:1}100%{opacity:0;display:none}}
-
-/* ===== Main Web ===== */
-#main{display:none;opacity:0;transition:opacity .5s;}
-#main.show{display:block;opacity:1;}
-header{padding:20px;text-align:center;border-bottom:1px solid rgba(212,175,55,.3);}
-header h1{margin:0;color:var(--gold);letter-spacing:2px;}
-header p{margin-top:5px;opacity:.7;}
-header div{margin-top:10px;}
-.card{margin:20px;padding:20px;border-radius:16px;background:rgba(15,15,15,.9);border:1px solid rgba(212,175,55,.25);box-shadow:0 0 25px rgba(212,175,55,.15);}
-.saldo{display:grid;gap:15px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
-.box{background:#000;padding:15px;border-radius:14px;border:1px solid rgba(212,175,55,.3);}
-.box h3{margin:0;color:var(--gold);font-size:.9rem;}
-.box strong{font-size:1.4rem;}
-table{width:100%;border-collapse:collapse;}
-th,td{padding:10px;border-bottom:1px solid #222;}
-th{color:var(--gold);}
-tr:hover{background:rgba(212,175,55,.05);}
+:root{--gold:#d4af37;}
+body,html{margin:0;height:100%;background:#000;color:#fff;font-family:Segoe UI}
+button{cursor:pointer;border-radius:12px;border:1px solid var(--gold);background:transparent;color:var(--gold);padding:10px 16px}
+button:hover{box-shadow:0 0 20px var(--gold)}
+#welcome{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
+#welcome input{margin:6px;width:240px;padding:10px;background:#111;color:#fff;border:1px solid var(--gold);border-radius:10px}
+#main{display:none}
+header{text-align:center;padding:20px;border-bottom:1px solid #333}
+.card{margin:20px;padding:20px;border:1px solid #333;border-radius:16px}
+.saldo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.box{padding:15px;border:1px solid #333;border-radius:12px}
+.fab{position:fixed;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;background:var(--gold);color:#000;font-size:28px}
+.modal{position:fixed;inset:0;display:none;background:rgba(0,0,0,.7);justify-content:center;align-items:center}
+.modal-content{background:#000;padding:20px;border:1px solid var(--gold);border-radius:16px;width:300px}
+input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;border:1px solid #333;border-radius:8px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #333}
 </style>
 </head>
 <body>
 
-<!-- Welcome Screen -->
+<!-- ===== WELCOME SCREEN ===== -->
 <div id="welcome">
-  <h1>WELCOME</h1>
-  <input type="email" id="email" placeholder="Email Admin">
-  <input type="password" id="password" placeholder="Password">
+  <h1 style="color:var(--gold)">WELCOME</h1>
+  <input id="email" placeholder="Email Admin">
+  <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
 </div>
 
-<!-- Main Web -->
+<!-- ===== MAIN APP ===== -->
 <div id="main">
 <header>
-<h1>PERSONAL FINANCE</h1>
-<p id="status">ADMIN OFF</p>
-<div>
-<select id="bulan" onchange="changePeriod()"></select>
-<select id="tahun" onchange="changePeriod()"></select>
-</div>
+<h2 style="color:var(--gold)">PERSONAL FINANCE</h2>
+<select id="bulan"></select>
+<select id="tahun"></select>
 </header>
 
-<div class="card">
-<div class="saldo">
-  <div class="box"><h3>SALDO ATM</h3><strong id="atm">0</strong></div>
-  <div class="box"><h3>SALDO CASH</h3><strong id="cash">0</strong></div>
-  <div class="box"><h3>TOTAL</h3><strong id="total">0</strong></div>
-</div>
+<div class="card saldo">
+  <div class="box">ATM<br><strong id="atm">0</strong></div>
+  <div class="box">CASH<br><strong id="cash">0</strong></div>
+  <div class="box">TOTAL<br><strong id="total">0</strong></div>
 </div>
 
 <div class="card">
-<h3 style="color:var(--gold)">Riwayat</h3>
 <table>
 <thead><tr><th>Tgl</th><th>Ket</th><th>Metode</th><th>Nominal</th></tr></thead>
 <tbody id="list"></tbody>
@@ -96,10 +74,11 @@ tr:hover{background:rgba(212,175,55,.05);}
 </div>
 
 <button class="fab" onclick="openForm()">+</button>
+</div>
 
+<!-- ===== MODAL ===== -->
 <div class="modal" id="modal">
 <div class="modal-content">
-<h3 style="color:var(--gold)">Input Transaksi</h3>
 <select id="jenis">
   <option value="masuk">Pemasukan</option>
   <option value="keluar">Pengeluaran</option>
@@ -114,101 +93,62 @@ tr:hover{background:rgba(212,175,55,.05);}
 <button onclick="closeForm()">Tutup</button>
 </div>
 </div>
-</div>
 
 <script>
-// Firebase config
-const firebaseConfig = {
-  apiKey: "API_KEY",
-  authDomain: "PROJECT.firebaseapp.com",
-  projectId: "PROJECT_ID",
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+let atm=0,cash=0,data=[],periode={}
+const bulanEl=document.getElementById("bulan"),tahunEl=document.getElementById("tahun")
+const bulanNama=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"]
 
-// Admin & Data
-let isAdmin = false;
-let atm=0,cash=0,data=[];
-const atmEl = document.getElementById('atm');
-const cashEl = document.getElementById('cash');
-const total = document.getElementById('total');
-const list = document.getElementById('list');
-const status = document.getElementById('status');
-const modal = document.getElementById('modal');
-const welcome = document.getElementById('welcome');
-const main = document.getElementById('main');
-const bulanEl = document.getElementById('bulan');
-const tahunEl = document.getElementById('tahun');
-const bulanNama = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+bulanNama.forEach((b,i)=>bulanEl.innerHTML+=`<option value="${i+1}">${b}</option>`)
+for(let y=2020;y<=2035;y++)tahunEl.innerHTML+=`<option>${y}</option>`
 
-// Periode setup
-for(let i=0;i<12;i++){let o=document.createElement("option");o.value=i+1;o.textContent=bulanNama[i];bulanEl.appendChild(o);}
-const currentYear=new Date().getFullYear();
-for(let y=currentYear-5;y<=currentYear+5;y++){let o=document.createElement("option");o.value=y;o.textContent=y;tahunEl.appendChild(o);}
-let periode={bulan:new Date().getMonth()+1,tahun:new Date().getFullYear()};
-bulanEl.value=periode.bulan;tahunEl.value=periode.tahun;
+periode.bulan=new Date().getMonth()+1
+periode.tahun=new Date().getFullYear()
+bulanEl.value=periode.bulan
+tahunEl.value=periode.tahun
 
-// Load / Save per-periode
-function loadData(){
-  const key=`data_${periode.tahun}_${periode.bulan}`;
-  atm=+localStorage[`atm_${periode.tahun}_${periode.bulan}`]||0;
-  cash=+localStorage[`cash_${periode.tahun}_${periode.bulan}`]||0;
-  data=JSON.parse(localStorage[key]||"[]");
-  render();
+function key(){return `${periode.tahun}_${periode.bulan}`}
+function load(){
+  atm=+localStorage["atm_"+key()]||0
+  cash=+localStorage["cash_"+key()]||0
+  data=JSON.parse(localStorage["data_"+key()]||"[]")
+  render()
 }
-function saveData(){
-  const key=`data_${periode.tahun}_${periode.bulan}`;
-  localStorage[`atm_${periode.tahun}_${periode.bulan}`]=atm;
-  localStorage[`cash_${periode.tahun}_${periode.bulan}`]=cash;
-  localStorage[key]=JSON.stringify(data);
+function save(){
+  localStorage["atm_"+key()]=atm
+  localStorage["cash_"+key()]=cash
+  localStorage["data_"+key()]=JSON.stringify(data)
 }
-
-// Render
 function render(){
-  atmEl.textContent=atm;
-  cashEl.textContent=cash;
-  total.textContent=atm+cash;
-  list.innerHTML="";
-  data.forEach(d=>{
-    list.innerHTML+=`<tr><td>${d.tgl}</td><td>${d.ket}</td><td>${d.metode}</td><td>${d.nominal}</td></tr>`;
-  });
+  atmEl.textContent=atm
+  cashEl.textContent=cash
+  total.textContent=atm+cash
+  list.innerHTML=data.map(d=>`<tr><td>${d.tgl}</td><td>${d.ket}</td><td>${d.metode}</td><td>${d.nominal}</td></tr>`).join("")
 }
+bulanEl.onchange=tahunEl.onchange=()=>{periode.bulan=bulanEl.value;periode.tahun=tahunEl.value;load()}
 
-// Change period
-function changePeriod(){periode.bulan=+bulanEl.value;periode.tahun=+tahunEl.value;loadData();}
+function openForm(){modal.style.display="flex"}
+function closeForm(){modal.style.display="none"}
 
-// Modal
-function openForm(){if(!isAdmin)return alert("Login admin dulu");modal.classList.add("show");}
-function closeForm(){modal.classList.remove("show");}
-
-// Simpan transaksi
 function simpan(){
-  const j=document.getElementById('jenis').value;
-  const m=document.getElementById('metode').value;
-  const n=+document.getElementById('nominal').value;
-  const k=document.getElementById('ket').value;
-  if(j==="masuk"){m==="atm"?atm+=n:cash+=n;}else{m==="atm"?atm-=n:cash-=n;}
-  data.unshift({tgl:new Date().toLocaleDateString(),ket:k,metode:m,nominal:n});
-  saveData();closeForm();render();
+  const j=jenis.value,m=metode.value,n=+nominal.value
+  if(j==="masuk"){m==="atm"?atm+=n:cash+=n}else{m==="atm"?atm-=n:cash-=n}
+  data.unshift({tgl:new Date().toLocaleDateString(),ket:ket.value,metode:m,nominal:n})
+  save();closeForm();render()
 }
 
-// Firebase Auth Login
 function login(){
-  const email=document.getElementById('email').value;
-  const password=document.getElementById('password').value;
-  auth.signInWithEmailAndPassword(email,password).catch(e=>alert(e.message));
+  auth.signInWithEmailAndPassword(email.value,password.value)
+  .catch(e=>alert(e.message))
 }
-auth.onAuthStateChanged(user=>{
-  if(user){
-    isAdmin=true;
-    status.textContent="ADMIN ON";
-    welcome.classList.add("fadeOut");
-    setTimeout(()=>{welcome.style.display="none";main.classList.add("show");},700);
-  }
-});
 
-// Load default periode
-loadData();
+auth.onAuthStateChanged(u=>{
+  if(u){
+    welcome.style.display="none"
+    main.style.display="block"
+    load()
+  }
+})
 </script>
 
 </body>
