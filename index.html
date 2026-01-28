@@ -62,19 +62,18 @@ table {
 }
 
 th, td {
-  padding: 10px 4px;
-  font-size: 13px;
-  color: #fff;
-  border-bottom: 1px solid #333;
-  /* Tambahkan ini biar teks gak vertikal */
-  white-space: nowrap; 
+    padding: 10px 5px;
+    font-size: 12px;
+    color: #fff;
+    /* Ini rahasianya: hapus border samping, sisain bawah aja */
+    border: none; 
+    border-bottom: 1px solid #333; 
+    white-space: nowrap;
 }
 
-/* Khusus Keterangan boleh pindah baris tapi gak boleh vertikal per huruf */
-td:nth-child(2) {
-  white-space: normal; 
-  word-break: normal;
-  min-width: 100px; /* Jaminan ruang minimal */
+/* Biar kolom Nominal gak terlalu mepet garis */
+td:nth-child(4), th:nth-child(4) {
+    padding-right: 15px; /* Kasih jarak napas di sebelah kanan nominal */
 }
 
 /* Atur lebar kolom secara manual agar pas di HP */
@@ -166,7 +165,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.6</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -412,7 +411,7 @@ async function simpan() {
     if (!n || !k || !tglPilihan) return alert("Isi semua data!");
 
     const d = new Date(tglPilihan);
-    const tglTabel = `${d.getDate()}/${d.getMonth() + 1}`;
+    const tglTabel = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
 
     // --- LOGIKA EDIT DI SINI ---
     if (editIndex !== null) {
@@ -479,6 +478,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
