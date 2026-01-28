@@ -66,15 +66,14 @@ th, td {
   padding: 12px 5px;
   font-size: 13px;
   color: #fff;
-  /* HAPUS SEMUA BORDER SAMPING (KIRI & KANAN) */
+  /* HAPUS SEMUA BORDER LAIN */
   border-left: none !important;
   border-right: none !important;
   border-top: none !important;
-  /* HANYA SISAKAN GARIS BAWAH */
-  border-bottom: 1px solid #333; 
+  /* PAKSA HANYA GARIS BAWAH */
+  border-bottom: 1px solid #333 !important; /* <--- WAJIB TAMBAH INI */
   white-space: nowrap;
 }
-
 /* Biar teks Keterangan gak vertikal tapi tetep rapi */
 td:nth-child(2), th:nth-child(2) {
   white-space: normal;
@@ -175,7 +174,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.8</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.9</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -488,6 +487,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
