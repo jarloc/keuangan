@@ -63,22 +63,24 @@ table {
 }
 
 th, td {
-  padding: 12px 5px;
-  font-size: 13px;
-  color: #fff;
-  /* HAPUS SEMUA BORDER LAIN */
-  border-left: none !important;
-  border-right: none !important;
-  border-top: none !important;
-  /* PAKSA HANYA GARIS BAWAH */
-  border-bottom: 1px solid #333 !important; /* <--- WAJIB TAMBAH INI */
-  white-space: nowrap;
+    padding: 12px 5px;
+    font-size: 13px;
+    color: #fff;
+    /* RESET TOTAL SEMUA JENIS GARIS */
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    /* PAKSA HANYA GARIS BAWAH */
+    border-bottom: 1px solid #333 !important;
+    background-color: transparent !important;
+    white-space: nowrap;
 }
-/* Biar teks Keterangan gak vertikal tapi tetep rapi */
-td:nth-child(2), th:nth-child(2) {
-  white-space: normal;
-  word-break: normal;
-  min-width: 100px;
+
+/* KHUSUS UNTUK NOMINAL: Pastikan gak ada sisa border kanan */
+th:nth-child(4), td:nth-child(4) {
+    border-right: none !important;
+    text-align: right;
+    padding-right: 15px;
 }
 
 /* Kasih jarak di kolom Nominal biar angka gak nempel garis hayalan */
@@ -487,6 +489,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
