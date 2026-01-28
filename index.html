@@ -56,30 +56,37 @@ button {
 
 /* Tabel Fix: Kecilin font sedikit & atur lebar presisi */
 table {
-    width: 100%;
-    table-layout: fixed; 
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto; /* Ubah ke auto agar fleksibel */
 }
 
 th, td {
-    padding: 8px 2px; /* Kecilin padding samping */
-    font-size: 12px;   /* Kecilin dikit fontnya biar muat */
-    word-wrap: break-word;
-    vertical-align: middle;
+  padding: 10px 4px;
+  font-size: 13px;
+  color: #fff;
+  border-bottom: 1px solid #333;
+  /* Tambahkan ini biar teks gak vertikal */
+  white-space: nowrap; 
 }
 
-/* Update Lebar Kolom Biar Teks Lengkap Gak Pecah */
-th:nth-child(1), td:nth-child(1) { width: 40px; }  /* Tgl dibikin pas-pasan */
-th:nth-child(2), td:nth-child(2) { width: auto; }  /* Ket biar fleksibel */
-th:nth-child(3), td:nth-child(3) { width: 55px; text-align: center; } /* Metode */
-th:nth-child(4), td:nth-child(4) { width: 85px; text-align: right; }  /* Nominal */
-th:nth-child(5), td:nth-child(5) { width: 35px; text-align: center; } /* Tombol */
+/* Khusus Keterangan boleh pindah baris tapi gak boleh vertikal per huruf */
+td:nth-child(2) {
+  white-space: normal; 
+  word-break: normal;
+  min-width: 100px; /* Jaminan ruang minimal */
+}
 
+/* Atur lebar kolom secara manual agar pas di HP */
+th:nth-child(1), td:nth-child(1) { width: 45px; } /* Tgl */
+th:nth-child(3), td:nth-child(3) { width: 55px; } /* Metode */
+th:nth-child(4), td:nth-child(4) { width: 90px; text-align: right; } /* Nominal */
 /* Tambahin ini biar teks gak maksa pindah baris di tengah kata */
-th, td {
-    white-space: normal; 
-    word-break: keep-all; /* Ini biar kata gak dipotong (Nomin-al) */
-    overflow-wrap: break-word; 
+th {
+  font-size: 11px; /* Font judul lebih kecil biar kata "Keterangan" muat */
+  text-transform: uppercase;
+  color: var(--gold);
+  letter-spacing: 0.5px;
 }
 button:hover{box-shadow:0 0 20px var(--gold)}
 #welcome{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
@@ -93,16 +100,14 @@ button:hover{box-shadow:0 0 20px var(--gold)}
 header{text-align:center;padding:20px;border-bottom:1px solid #333}
 .card{margin:20px;padding:20px;border:1px solid #333;border-radius:16px}
 .saldo {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Bagi dua sama rata */
-    gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Bagi dua kolom */
+  gap: 10px;
 }
 
-/* Kotak TOTAL (kotak ketiga) dibikin full 2 kolom */
 .box:nth-child(3) {
-    grid-column: span 2; 
-    background: rgba(212, 175, 55, 0.1); /* Kasih warna tipis biar spesial */
-    border: 1px solid var(--gold);
+  grid-column: 1 / span 2; /* Taruh di baris baru, pakai 2 kolom sekaligus */
+  border-color: var(--gold);
 }
 
 .box {
@@ -143,7 +148,16 @@ th,td{padding:8px;border-bottom:1px solid #333}
   }
 
 }
-
+.header-controls {
+  display: flex; 
+  gap: 10px; 
+  justify-content: center; 
+  padding: 0 20px;
+}
+.header-controls select {
+  flex: 1; /* Biar lebarnya bagi dua adil */
+  margin-top: 0;
+}
 </style>
 </head>
 <body>
@@ -152,7 +166,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -162,9 +176,9 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="main">
 <header>
   <h2 style="color:var(--gold); margin-bottom:10px;">KEUANGAN PRIBADI</h2>
-  <div style="display: flex; gap: 10px; padding: 0 10px;">
-    <select id="bulan" style="margin-top:0"></select>
-    <select id="tahun" style="margin-top:0"></select>
+  <div class="header-controls">
+    <select id="bulan"></select>
+    <select id="tahun"></select>
   </div>
 </header>
 
@@ -465,6 +479,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
