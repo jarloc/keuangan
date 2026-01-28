@@ -85,7 +85,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.3.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.3.6</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -233,8 +233,8 @@ bulanEl.onchange = tahunEl.onchange = () => {
 // Fungsi buat munculin dan menutup kotak input (modal)
 function openForm() { 
   document.getElementById("modal").style.display = "flex";
-  // Baris ini buat ngisi tanggal otomatis hari ini
   document.getElementById("tglInput").valueAsDate = new Date();
+  editIndex = null;
 }
 function closeForm() { document.getElementById("modal").style.display = "none"; }
 
@@ -271,6 +271,20 @@ function toggleMode(tipe) {
         modeHapus = !modeHapus;
         modeEdit = false;     // Matiin mode edit biar gak bentrok
     }
+  function bukaEdit(index) {
+    const item = data[index];
+    editIndex = index; // Kita tandai baris mana yang mau diubah
+    
+    // Masukin data lama ke kotak-kotak input
+    document.getElementById("tglInput").value = item.tglAsli;
+    document.getElementById("jenis").value = item.jenis;
+    document.getElementById("metode").value = item.metode;
+    document.getElementById("ket").value = item.ket;
+    document.getElementById("nominal").value = item.nominal;
+    
+    // Buka modalnya biar lo tinggal ganti-ganti isinya
+    document.getElementById("modal").style.display = "flex";
+}
     
     // 3. Update Visual Tombol (Biar tau mana yang lagi aktif)
     const btnEdit = document.getElementById("btnModeEdit");
@@ -298,17 +312,29 @@ async function simpan() {
 
     if (!n || !k || !tglPilihan) return alert("Isi semua data!");
 
-    
     const d = new Date(tglPilihan);
     const tglTabel = `${d.getDate()}/${d.getMonth() + 1}`;
 
+    // --- LOGIKA EDIT DI SINI ---
+    if (editIndex !== null) {
+        const lama = data[editIndex];
+        if (lama.jenis === "masuk") {
+            lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal;
+        } else {
+            lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal;
+        }
+        // Buang data lama dari list supaya nanti diganti yang baru
+        data.splice(editIndex, 1);
+    }
+        // Hitung saldo baru berdasarkan input yang baru
     if (j === "masuk") {
         m === "atm" ? atm += n : cash += n;
     } else {
         m === "atm" ? atm -= n : cash -= n;
     }
 
-    data.unshift({
+    // Masukkan data (bisa data baru atau data hasil revisi)
+    data.push({
         tgl: tglTabel,
         ket: k,
         metode: m,
@@ -317,10 +343,12 @@ async function simpan() {
         tglAsli: tglPilihan
     });
 
+    editIndex = null; // Reset biar balik ke mode input biasa
     render();
     closeForm();
     await save();
     
+    // Kosongkan form
     document.getElementById("nominal").value = "";
     document.getElementById("ket").value = "";
 }
@@ -352,6 +380,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
