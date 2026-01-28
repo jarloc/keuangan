@@ -54,28 +54,39 @@ button {
     padding: 12px 0;
 }
 
-/* Tabel Fix: Kecilin font sedikit & atur lebar presisi */
+/* Tabel Anti-Bingkai: Garis Vertikal Lenyap */
 table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto; /* Ubah ke auto agar fleksibel */
+  table-layout: auto;
+  border: none !important; /* Pastikan tidak ada bingkai luar */
 }
 
 th, td {
-    padding: 10px 5px;
-    font-size: 12px;
-    color: #fff;
-    /* Ini rahasianya: hapus border samping, sisain bawah aja */
-    border: none; 
-    border-bottom: 1px solid #333; 
-    white-space: nowrap;
+  padding: 12px 5px;
+  font-size: 13px;
+  color: #fff;
+  /* HAPUS SEMUA BORDER SAMPING (KIRI & KANAN) */
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  /* HANYA SISAKAN GARIS BAWAH */
+  border-bottom: 1px solid #333; 
+  white-space: nowrap;
 }
 
-/* Biar kolom Nominal gak terlalu mepet garis */
+/* Biar teks Keterangan gak vertikal tapi tetep rapi */
+td:nth-child(2), th:nth-child(2) {
+  white-space: normal;
+  word-break: normal;
+  min-width: 100px;
+}
+
+/* Kasih jarak di kolom Nominal biar angka gak nempel garis hayalan */
 td:nth-child(4), th:nth-child(4) {
-    padding-right: 15px; /* Kasih jarak napas di sebelah kanan nominal */
+  text-align: right;
+  padding-right: 15px;
 }
-
 /* Atur lebar kolom secara manual agar pas di HP */
 th:nth-child(1), td:nth-child(1) { width: 45px; } /* Tgl */
 th:nth-child(3), td:nth-child(3) { width: 55px; } /* Metode */
@@ -164,7 +175,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.7</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.4.8</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -477,6 +488,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
