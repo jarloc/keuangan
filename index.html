@@ -21,16 +21,7 @@
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  <script>
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById('welcome').style.display = 'none';
-    document.getElementById('main').style.display = 'block';
-  } else {
-    document.getElementById('welcome').style.display = 'flex';
-    document.getElementById('main').style.display = 'none';
-  }
-});
+  
 </script>
 
 <style>
@@ -130,6 +121,12 @@ function save(){
   localStorage["cash_"+key()]=cash
   localStorage["data_"+key()]=JSON.stringify(data)
 }
+  
+const atmEl = document.getElementById("atm")
+const cashEl = document.getElementById("cash")
+const total = document.getElementById("total")
+const list = document.getElementById("list")
+
 function render(){
   atmEl.textContent=atm
   cashEl.textContent=cash
@@ -153,16 +150,21 @@ function login(){
   .catch(e=>alert(e.message))
 }
 
-auth.onAuthStateChanged(u=>{
-  if(u){
-    welcome.style.display="none"
-    main.style.display="block"
-    load()
+auth.onAuthStateChanged(user => {
+  if (user) {
+    welcome.style.display = "none";
+    main.style.display = "block";
+    load();
+  } else {
+    welcome.style.display = "flex";
+    main.style.display = "none";
   }
-})
+});
+
 </script>
 
 </body>
 </html>
+
 
 
