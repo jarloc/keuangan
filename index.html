@@ -271,20 +271,6 @@ function toggleMode(tipe) {
         modeHapus = !modeHapus;
         modeEdit = false;     // Matiin mode edit biar gak bentrok
     }
-  function bukaEdit(index) {
-    const item = data[index];
-    editIndex = index; // Kita tandai baris mana yang mau diubah
-    
-    // Masukin data lama ke kotak-kotak input
-    document.getElementById("tglInput").value = item.tglAsli;
-    document.getElementById("jenis").value = item.jenis;
-    document.getElementById("metode").value = item.metode;
-    document.getElementById("ket").value = item.ket;
-    document.getElementById("nominal").value = item.nominal;
-    
-    // Buka modalnya biar lo tinggal ganti-ganti isinya
-    document.getElementById("modal").style.display = "flex";
-}
     
     // 3. Update Visual Tombol (Biar tau mana yang lagi aktif)
     const btnEdit = document.getElementById("btnModeEdit");
@@ -302,6 +288,20 @@ function toggleMode(tipe) {
 
     // 4. Gambar ulang tabelnya (biar tombol di tiap baris muncul/hilang)
     render();
+}
+  function bukaEdit(index) {
+    const item = data[index];
+    editIndex = index; // Kita tandai baris mana yang mau diubah
+    
+    // Masukin data lama ke kotak-kotak input
+    document.getElementById("tglInput").value = item.tglAsli;
+    document.getElementById("jenis").value = item.jenis;
+    document.getElementById("metode").value = item.metode;
+    document.getElementById("ket").value = item.ket;
+    document.getElementById("nominal").value = item.nominal;
+    
+    // Buka modalnya biar lo tinggal ganti-ganti isinya
+    document.getElementById("modal").style.display = "flex";
 }
 async function simpan() {
     const tglPilihan = document.getElementById("tglInput").value;
@@ -380,6 +380,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
