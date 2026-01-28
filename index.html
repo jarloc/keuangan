@@ -85,7 +85,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.2.8</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.2.9</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -118,6 +118,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <!-- ===== MODAL ===== -->
 <div class="modal" id="modal">
 <div class="modal-content">
+<input id="tglInput" type="date">
 <select id="jenis">
   <option value="masuk">Pemasukan</option>
   <option value="keluar">Pengeluaran</option>
@@ -139,7 +140,7 @@ const db = firebase.firestore();
 
 let atm = 0, cash = 0, data = [], periode = {};
 const bulanEl = document.getElementById("bulan"), tahunEl = document.getElementById("tahun");
-const bulanNama = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const bulanNama = ["JANUARI","FEBRUARI","MAARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
 
 // 2. Setting Dropdown & Periode
 bulanNama.forEach((b, i) => bulanEl.innerHTML += `<option value="${i + 1}">${b}</option>`);
@@ -220,16 +221,25 @@ bulanEl.onchange = tahunEl.onchange = () => {
     load();
 };
 
-function openForm() { document.getElementById("modal").style.display = "flex"; }
+function openForm() { 
+  document.getElementById("modal").style.display = "flex";
+  // Baris ini buat ngisi tanggal otomatis hari ini
+  document.getElementById("tglInput").valueAsDate = new Date();
+}
 function closeForm() { document.getElementById("modal").style.display = "none"; }
 
 async function simpan() {
+    const tglPilihan = document.getElementById("tglInput").value;
     const j = document.getElementById("jenis").value;
     const m = document.getElementById("metode").value;
     const n = +document.getElementById("nominal").value;
     const k = document.getElementById("ket").value;
 
-    if (!n || !k) return alert("Isi nominal dan keterangan!");
+    if (!n || !k || !tglPilihan) return alert("Isi semua data!");
+
+    
+    const d = new Date(tglPilihan);
+    const tglTabel = `${d.getDate()}/${d.getMonth() + 1}`;
 
     if (j === "masuk") {
         m === "atm" ? atm += n : cash += n;
@@ -238,16 +248,17 @@ async function simpan() {
     }
 
     data.unshift({
-        tgl: new Date().toLocaleDateString('id-ID').split('/').slice(0,2).join('/'),
+        tgl: tglTabel,
         ket: k,
         metode: m,
         jenis: j,
-        nominal: n
+        nominal: n,
+        tglAsli: tglPilihan
     });
 
     render();
     closeForm();
-    await save(); // Proses simpan ke cloud
+    await save();
     
     document.getElementById("nominal").value = "";
     document.getElementById("ket").value = "";
@@ -280,6 +291,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
