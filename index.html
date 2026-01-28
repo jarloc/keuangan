@@ -6,20 +6,21 @@
 <title>Personal Finance</title>
 
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCcBqGjq9ZN4Cv-pDfNqaJ2QxnqSqzzPHE",
-  authDomain: "keuangan-3ae83.firebaseapp.com",
-  projectId: "keuangan-3ae83",
-  storageBucket: "keuangan-3ae83.firebasestorage.app",
-  messagingSenderId: "988326680959",
-  appId: "1:988326680959:web:c2c39e4bed6cdf9c66a24a"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+  const firebaseConfig = {
+    apiKey: "AIzaSyCcBqGjq9ZN4Cv-pDfNqaJ2QxnqSqzzPHE",
+    authDomain: "keuangan-3ae83.firebaseapp.com",
+    projectId: "keuangan-3ae83",
+    storageBucket: "keuangan-3ae83.firebasestorage.app",
+    messagingSenderId: "988326680959",
+    appId: "1:988326680959:web:c2c39e4bed6cdf9c66a24a"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
 </script>
 
 <style>
@@ -153,3 +154,4 @@ auth.onAuthStateChanged(u=>{
 
 </body>
 </html>
+
