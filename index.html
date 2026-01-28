@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Personal Finance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --gold:#d4af37;
+  --black:#0b0b0b;
+  --white:#fff;
+}
+*{box-sizing:border-box;font-family:Segoe UI,Arial;}
+body{
+  margin:0;background:linear-gradient(135deg,#000,#111,#000);
+  color:var(--white);min-height:100vh;
+}
+header{
+  padding:20px;text-align:center;
+  border-bottom:1px solid rgba(212,175,55,.3)
+}
+h1{margin:0;color:var(--gold);letter-spacing:2px}
+.card{
+  margin:20px;padding:20px;
+  border-radius:16px;
+  background:rgba(15,15,15,.9);
+  border:1px solid rgba(212,175,55,.25);
+  box-shadow:0 0 25px rgba(212,175,55,.15)
+}
+.saldo{
+  display:grid;gap:15px;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr))
+}
+.box{
+  background:#000;padding:15px;border-radius:14px;
+  border:1px solid rgba(212,175,55,.3)
+}
+.box h3{margin:0;color:var(--gold);font-size:.9rem}
+.box strong{font-size:1.4rem}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #222}
+th{color:var(--gold)}
+tr:hover{background:rgba(212,175,55,.05)}
+
+button{
+  border:1px solid var(--gold);
+  background:transparent;color:var(--gold);
+  padding:10px 16px;border-radius:12px;
+  cursor:pointer;transition:.2s
+}
+button:hover{box-shadow:0 0 15px rgba(212,175,55,.6)}
+button:active{transform:scale(.95)}
+
+.fab{
+  position:fixed;right:25px;bottom:25px;
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#fff2b0);
+  color:#000;font-size:28px;border:none;
+  box-shadow:0 0 20px rgba(212,175,55,.8);
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{50%{transform:translateY(-10px)}}
+
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center
+}
+.modal-content{
+  background:#000;padding:20px;border-radius:16px;
+  border:1px solid var(--gold);width:320px
+}
+input,select{
+  width:100%;margin-top:8px;padding:8px;
+  background:#111;color:#fff;
+  border:1px solid #333;border-radius:8px
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>PERSONAL FINANCE</h1>
+<p id="status">ADMIN OFF</p>
+<button onclick="login()">LOGIN ADMIN</button>
+</header>
+
+<div class="card">
+<div class="saldo">
+  <div class="box"><h3>SALDO ATM</h3><strong id="atm">0</strong></div>
+  <div class="box"><h3>SALDO CASH</h3><strong id="cash">0</strong></div>
+  <div class="box"><h3>TOTAL</h3><strong id="total">0</strong></div>
+</div>
+</div>
+
+<div class="card">
+<h3 style="color:var(--gold)">Riwayat</h3>
+<table>
+<thead><tr><th>Tgl</th><th>Ket</th><th>Metode</th><th>Nominal</th></tr></thead>
+<tbody id="list"></tbody>
+</table>
+</div>
+
+<button class="fab" onclick="openForm()">+</button>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3 style="color:var(--gold)">Input Transaksi</h3>
+<select id="jenis">
+  <option value="masuk">Pemasukan</option>
+  <option value="keluar">Pengeluaran</option>
+</select>
+<select id="metode">
+  <option value="atm">ATM</option>
+  <option value="cash">Cash</option>
+</select>
+<input id="ket" placeholder="Keterangan">
+<input id="nominal" type="number" placeholder="Nominal">
+<button onclick="simpan()">Simpan</button>
+<button onclick="closeForm()">Tutup</button>
+</div>
+</div>
+
+<script>
+let isAdmin=false;
+let atm=+localStorage.atm||0;
+let cash=+localStorage.cash||0;
+let data=JSON.parse(localStorage.data||"[]");
+
+function render(){
+  atmEl.textContent=atm;
+  cashEl.textContent=cash;
+  total.textContent=atm+cash;
+  list.innerHTML="";
+  data.forEach(d=>{
+    list.innerHTML+=`<tr>
+    <td>${d.tgl}</td><td>${d.ket}</td>
+    <td>${d.metode}</td><td>${d.nominal}</td></tr>`;
+  });
+}
+const atmEl=document.getElementById('atm');
+const cashEl=document.getElementById('cash');
+
+function login(){
+  const p=prompt("Password?");
+  if(p==="ADMIN"){
+    isAdmin=true;
+    status.textContent="ADMIN ON";
+    alert("Login sukses");
+  }
+}
+
+function openForm(){
+  if(!isAdmin) return alert("Login admin dulu");
+  modal.style.display="flex";
+}
+function closeForm(){modal.style.display="none"}
+
+function simpan(){
+  const j=jenis.value,m=metode.value,n=+nominal.value;
+  if(j==="masuk"){
+    m==="atm"?atm+=n:cash+=n;
+  }else{
+    m==="atm"?atm-=n:cash-=n;
+  }
+  data.unshift({
+    tgl:new Date().toLocaleDateString(),
+    ket:ket.value,
+    metode:m,
+    nominal:n
+  });
+  localStorage.atm=atm;
+  localStorage.cash=cash;
+  localStorage.data=JSON.stringify(data);
+  closeForm();render();
+}
+render();
+</script>
+
+</body>
+</html>
