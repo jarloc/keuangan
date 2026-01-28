@@ -8,6 +8,7 @@
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
   const firebaseConfig = {
@@ -87,7 +88,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.2.6</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.2.7</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -136,70 +137,141 @@ th,td{padding:8px;border-bottom:1px solid #333}
 </div>
 
 <script>
-let atm=0,cash=0,data=[],periode={}
-const bulanEl=document.getElementById("bulan"),tahunEl=document.getElementById("tahun")
-const bulanNama=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"]
+// 1. Inisialisasi Firestore
+const db = firebase.firestore();
 
-bulanNama.forEach((b,i)=>bulanEl.innerHTML+=`<option value="${i+1}">${b}</option>`)
-for(let y=2020;y<=2035;y++)tahunEl.innerHTML+=`<option>${y}</option>`
+let atm = 0, cash = 0, data = [], periode = {};
+const bulanEl = document.getElementById("bulan"), tahunEl = document.getElementById("tahun");
+const bulanNama = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 
-periode.bulan=new Date().getMonth()+1
-periode.tahun=new Date().getFullYear()
-bulanEl.value=periode.bulan
-tahunEl.value=periode.tahun
+// 2. Setting Dropdown & Periode
+bulanNama.forEach((b, i) => bulanEl.innerHTML += `<option value="${i + 1}">${b}</option>`);
+for (let y = 2020; y <= 2035; y++) tahunEl.innerHTML += `<option>${y}</option>`;
 
-function key(){return `${periode.tahun}_${periode.bulan}`}
-function load(){
-  atm=+localStorage["atm_"+key()]||0
-  cash=+localStorage["cash_"+key()]||0
-  data=JSON.parse(localStorage["data_"+key()]||"[]")
-  render()
-}
-function save(){
-  localStorage["atm_"+key()]=atm
-  localStorage["cash_"+key()]=cash
-  localStorage["data_"+key()]=JSON.stringify(data)
-}
+periode.bulan = new Date().getMonth() + 1;
+periode.tahun = new Date().getFullYear();
+bulanEl.value = periode.bulan;
+tahunEl.value = periode.tahun;
 
-const atmEl=document.getElementById("atm")
-const cashEl=document.getElementById("cash")
-const total=document.getElementById("total")
-const list=document.getElementById("list")
+function key() { return `${periode.tahun}_${periode.bulan}`; }
 
-function render(){
-  atmEl.textContent=atm
-  cashEl.textContent=cash
-  total.textContent=atm+cash
-  list.innerHTML=data.map(d=>`<tr><td>${d.tgl}</td><td>${d.ket}</td><td>${d.metode}</td><td>${d.nominal}</td></tr>`).join("")
-}
+// 3. Fungsi Ambil Data dari Firebase (Cloud)
+async function load() {
+    const user = auth.currentUser;
+    if (!user) return;
 
-bulanEl.onchange=tahunEl.onchange=()=>{periode.bulan=bulanEl.value;periode.tahun=tahunEl.value;load()}
+    document.getElementById("list").innerHTML = "<tr><td colspan='4' style='text-align:center'>Memuat data...</td></tr>";
 
-function openForm(){modal.style.display="flex"}
-function closeForm(){modal.style.display="none"}
+    try {
+        const docRef = db.collection("keuangan").doc(`${user.uid}_${key()}`);
+        const doc = await docRef.get();
 
-function simpan(){
-  const j=jenis.value,m=metode.value,n=+nominal.value
-  if(j==="masuk"){m==="atm"?atm+=n:cash+=n}else{m==="atm"?atm-=n:cash-=n}
-  data.unshift({tgl:new Date().toLocaleDateString(),ket:ket.value,metode:m,nominal:n})
-  save();closeForm();render()
+        if (doc.exists) {
+            const cloudData = doc.data();
+            atm = cloudData.atm || 0;
+            cash = cloudData.cash || 0;
+            data = cloudData.transaksi || [];
+        } else {
+            atm = 0; cash = 0; data = [];
+        }
+        render();
+    } catch (e) {
+        console.error("Error loading:", e);
+    }
 }
 
-function login(){
-  auth.signInWithEmailAndPassword(email.value,password.value)
-  .catch(e=>alert(e.message))
+// 4. Fungsi Simpan Data ke Firebase (Cloud)
+async function save() {
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+        await db.collection("keuangan").doc(`${user.uid}_${key()}`).set({
+            atm: atm,
+            cash: cash,
+            transaksi: data,
+            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch (e) {
+        alert("Gagal simpan ke Cloud: " + e.message);
+    }
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user){
-    welcome.style.display="none"
-    main.style.display="block"
-    load()
-  }else{
-    welcome.style.display="flex"
-    main.style.display="none"
-  }
-})
+// 5. Fungsi Tampilan (Render)
+function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
+
+function render() {
+    document.getElementById("atm").textContent = f(atm);
+    document.getElementById("cash").textContent = f(cash);
+    document.getElementById("total").textContent = f(atm + cash);
+    
+    document.getElementById("list").innerHTML = data.map(d => `
+        <tr>
+            <td>${d.tgl}</td>
+            <td>${d.ket}</td>
+            <td>${d.metode.toUpperCase()}</td>
+            <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">
+                ${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}
+            </td>
+        </tr>
+    `).join("");
+}
+
+// 6. Event Handlers
+bulanEl.onchange = tahunEl.onchange = () => {
+    periode.bulan = bulanEl.value;
+    periode.tahun = tahunEl.value;
+    load();
+};
+
+function openForm() { document.getElementById("modal").style.display = "flex"; }
+function closeForm() { document.getElementById("modal").style.display = "none"; }
+
+async function simpan() {
+    const j = document.getElementById("jenis").value;
+    const m = document.getElementById("metode").value;
+    const n = +document.getElementById("nominal").value;
+    const k = document.getElementById("ket").value;
+
+    if (!n || !k) return alert("Isi nominal dan keterangan!");
+
+    if (j === "masuk") {
+        m === "atm" ? atm += n : cash += n;
+    } else {
+        m === "atm" ? atm -= n : cash -= n;
+    }
+
+    data.unshift({
+        tgl: new Date().toLocaleDateString('id-ID').split('/').slice(0,2).join('/'),
+        ket: k,
+        metode: m,
+        jenis: j,
+        nominal: n
+    });
+
+    render();
+    closeForm();
+    await save(); // Proses simpan ke cloud
+    
+    document.getElementById("nominal").value = "";
+    document.getElementById("ket").value = "";
+}
+
+function login() {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+    auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+}
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById("welcome").style.display = "none";
+        document.getElementById("main").style.display = "block";
+        load();
+    } else {
+        document.getElementById("welcome").style.display = "flex";
+        document.getElementById("main").style.display = "none";
+    }
+});
 </script>
   
 <script>
@@ -211,22 +283,6 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
