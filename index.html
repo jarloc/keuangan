@@ -85,7 +85,7 @@ th,td{padding:8px;border-bottom:1px solid #333}
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.3.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.3.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -106,7 +106,11 @@ th,td{padding:8px;border-bottom:1px solid #333}
 </div>
 
 <div class="card">
-<table>
+  <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+    <button id="btnModeEdit" onclick="toggleMode('edit')" style="width:auto; padding:8px 15px; font-size:12px;">EDIT</button>
+    <button id="btnModeHapus" onclick="toggleMode('hapus')" style="width:auto; padding:8px 15px; font-size:12px;">HAPUS</button>
+  </div>
+  <table>
 <thead><tr><th>Tgl</th><th>Ket</th><th>Metode</th><th>Nominal</th><th></th></tr></thead>
 <tbody id="list"></tbody>
 </table>
@@ -210,7 +214,10 @@ function render() {
             <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">
                 ${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}
             </td>
-            <td><button style="padding:5px 10px; width:auto; font-size:12px;" onclick="hapusData(${i})">X</button></td>
+            <td>
+                ${modeHapus ? `<button style="padding:5px 10px; width:auto; font-size:10px; background:red; color:white; border:none; border-radius:4px;" onclick="hapusData(${i})">X</button>` : ''}
+                ${modeEdit ? `<button style="padding:5px 10px; width:auto; font-size:10px; background:blue; color:white; border:none; border-radius:4px;" onclick="bukaEdit(${i})">Edit</button>` : ''}
+            </td>
         </tr>
     `).join("");
 }
@@ -249,7 +256,38 @@ async function hapusData(index) {
     render();
     await save();
 }
+// 1. Tambahkan variabel status di bagian atas script
+let modeEdit = false;
+let modeHapus = false;
+let editIndex = null; // Penting: Buat nandaian baris mana yang lagi di edit
 
+// 2. Fungsi buat mati-nyalain mode
+function toggleMode(tipe) {
+    if (tipe === 'edit') {
+        modeEdit = !modeEdit; // Kalo tadi mati jadi nyala, kalo nyala jadi mati
+        modeHapus = false;    // Matiin mode hapus biar gak bentrok
+    } else if (tipe === 'hapus') {
+        modeHapus = !modeHapus;
+        modeEdit = false;     // Matiin mode edit biar gak bentrok
+    }
+    
+    // 3. Update Visual Tombol (Biar tau mana yang lagi aktif)
+    const btnEdit = document.getElementById("btnModeEdit");
+    const btnHapus = document.getElementById("btnModeHapus");
+
+    // Efek buat tombol EDIT
+    btnEdit.textContent = modeEdit ? "SELESAI" : "EDIT";
+    btnEdit.style.background = modeEdit ? "blue" : "transparent";
+    btnEdit.style.color = modeEdit ? "white" : "blue";
+
+    // Efek buat tombol HAPUS
+    btnHapus.textContent = modeHapus ? "SELESAI" : "HAPUS";
+    btnHapus.style.background = modeHapus ? "red" : "transparent";
+    btnHapus.style.color = modeHapus ? "white" : "red";
+
+    // 4. Gambar ulang tabelnya (biar tombol di tiap baris muncul/hilang)
+    render();
+}
 async function simpan() {
     const tglPilihan = document.getElementById("tglInput").value;
     const j = document.getElementById("jenis").value;
@@ -313,6 +351,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
