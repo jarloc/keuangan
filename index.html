@@ -147,19 +147,6 @@ header {
     border-radius: 12px;
     text-align: center;
 }
-/* Animasi Mengapung & Membal */
-@keyframes floating {
-    0% { transform: translate(var(--tx, 0), 0px); }
-    50% { transform: translate(var(--tx, 0), -10px); }
-    100% { transform: translate(var(--tx, 0), 0px); }
-}
-
-@keyframes pop {
-    0% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.9); }
-    50% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.2); }
-    100% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(1); }
-}
-
 .fab {
     position: fixed;
     right: 20px;
@@ -176,19 +163,29 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: floating 3s ease-in-out infinite;
-    touch-action: none;
-    will-change: transform;
     cursor: move;
+    touch-action: none;
+    /* Animasi floating dibikin simpel */
+    animation: floating 3s ease-in-out infinite;
 }
 
-.fab:active:not(.dragging) {
-    transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.9);
-    animation: none;
+@keyframes floating {
+    0%, 100% { margin-bottom: 0; }
+    50% { margin-bottom: 10px; }
+}
+
+.fab:active {
+    transform: scale(0.9);
 }
 
 .fab-pop {
-    animation: pop 0.3s ease-out !important;
+    animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 .modal{position:fixed;inset:0;display:none;background:rgba(0,0,0,.7);justify-content:center;align-items:center}
 .modal-content{background:#000;padding:20px;border:1px solid var(--gold);border-radius:16px;width:300px}
@@ -238,7 +235,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.6</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -271,7 +268,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </table>
 </div>
 
-<button class="fab" onclick="openForm()">+</button>
+<button class="fab">+</button>
 </div>
 
 <!-- ===== MODAL ===== -->
@@ -551,84 +548,73 @@ window.addEventListener("beforeunload", function (e) {
 
 <script>
   const fab = document.querySelector('.fab');
-let isDragging = false, startX, startY;
-let posX = 0, posY = 0; 
+let isDragging = false;
 
-function startDrag(e) {
+function moveFab(e) {
+    isDragging = true;
+    fab.style.animation = 'none'; // Matiin floating pas ditarik biar gak kedut
+    
+    // Ambil koordinat jari/mouse
+    let x = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
+    let y = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
+
+    // Set posisi tepat di tengah kursor/jari
+    fab.style.left = (x - 30) + 'px';
+    fab.style.top = (y - 30) + 'px';
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
+}
+
+fab.addEventListener('mousedown', () => {
+    isDragging = false; // Reset status setiap klik
+    window.addEventListener('mousemove', moveFab);
+});
+
+fab.addEventListener('touchstart', () => {
     isDragging = false;
-    fab.style.animation = "none";
-    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-    
-    startX = clientX - posX;
-    startY = clientY - posY;
-}
+    window.addEventListener('touchmove', moveFab, { passive: false });
+});
 
-function drag(e) {
-    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-
-    if (Math.abs(clientX - (startX + posX)) > 5 || Math.abs(clientY - (startY + posY)) > 5) {
-        isDragging = true;
-        fab.classList.add('dragging');
-    }
-
-    if (!isDragging) return;
-    if (e.type === 'touchmove') e.preventDefault();
-
-    posX = clientX - startX;
-    posY = clientY - startY;
-
-    // Update posisi pake variabel CSS biar animasinya tetep sinkron di titik baru
-    fab.style.setProperty('--tx', `${posX}px`);
-    fab.style.setProperty('--ty', `${posY}px`);
-    fab.style.transform = `translate(${posX}px, ${posY}px)`;
-}
-
-function endDrag(e) {
+window.addEventListener('mouseup', (e) => {
+    window.removeEventListener('mousemove', moveFab);
     if (isDragging) {
-        e.preventDefault();
-        e.stopPropagation();
+        // Efek pop pas dilepas
+        fab.classList.add('fab-pop');
+        setTimeout(() => {
+            fab.classList.remove('fab-pop');
+            fab.style.animation = 'floating 3s ease-in-out infinite';
+        }, 300);
     }
-    
-    fab.classList.remove('dragging');
-    window.removeEventListener('mousemove', drag);
-    window.removeEventListener('touchmove', drag);
-    
-    fab.classList.add('fab-pop');
-    setTimeout(() => {
-        fab.classList.remove('fab-pop');
-        fab.style.animation = "floating 3s ease-in-out infinite";
-        setTimeout(() => isDragging = false, 100);
-    }, 300);
-}
-
-fab.addEventListener('mousedown', (e) => {
-    startDrag(e);
-    window.addEventListener('mousemove', drag);
 });
 
-fab.addEventListener('touchstart', (e) => {
-    startDrag(e);
-    window.addEventListener('touchmove', drag, { passive: false });
+window.addEventListener('touchend', (e) => {
+    window.removeEventListener('touchmove', moveFab);
+    if (isDragging) {
+        fab.classList.add('fab-pop');
+        setTimeout(() => {
+            fab.classList.remove('fab-pop');
+            fab.style.animation = 'floating 3s ease-in-out infinite';
+        }, 300);
+    }
 });
 
-window.addEventListener('mouseup', endDrag, true);
-window.addEventListener('touchend', endDrag, true);
-
-// Cegah klik kebuka kalau baru selesai drag
-fab.addEventListener('click', (e) => {
+// Biar gak buka form pas abis geser
+fab.onclick = function(e) {
     if (isDragging) {
         e.preventDefault();
         e.stopImmediatePropagation();
+        return false;
     }
-}, true);
+    // Kalau gak drag, jalankan openForm() manual
+    openForm();
+};
 </script>
 
 </body>
 </html>
 </body>
 </html>
+
 
 
 
