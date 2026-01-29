@@ -147,7 +147,52 @@ header {
     border-radius: 12px;
     text-align: center;
 }
-.fab{position:fixed;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;background:var(--gold);color:#000;font-size:28px;padding: 0;border: none;box-shadow: 0 0 10px rgba(0,0,0,0.5);}
+/* Animasi Mengapung (Standby) */
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.fab {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #000;
+    font-size: 28px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 999;
+    cursor: move;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Jalankan animasi mengapung saat standby */
+    animation: floating 3s ease-in-out infinite;
+    transition: transform 0.1s ease;
+    touch-action: none; /* Penting biar layar gak ikut scroll pas narik tombol */
+}
+
+/* Saat diklik/ditahan (Mengecil sedikit) */
+.fab:active {
+    transform: scale(0.9) !important;
+    animation: none; /* Berhenti mengapung saat ditekan */
+}
+
+/* Kelas tambahan saat tombol dilepas (Membesar dikit terus normal) */
+.fab-pop {
+    animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
 .modal{position:fixed;inset:0;display:none;background:rgba(0,0,0,.7);justify-content:center;align-items:center}
 .modal-content{background:#000;padding:20px;border:1px solid var(--gold);border-radius:16px;width:300px}
 input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;border:1px solid #333;border-radius:8px}
@@ -196,7 +241,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -507,40 +552,61 @@ window.addEventListener("beforeunload", function (e) {
 });
 </script>
 
+<script>
+const fab = document.querySelector('.fab');
+let isDragging = false;
+let offsetX, offsetY;
+
+function startDrag(e) {
+    isDragging = true;
+    fab.style.animation = "none"; 
+    
+    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+    
+    offsetX = clientX - fab.getBoundingClientRect().left;
+    offsetY = clientY - fab.getBoundingClientRect().top;
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    if (e.type === 'touchmove') e.preventDefault();
+    
+    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+    
+    let x = clientX - offsetX;
+    let y = clientY - offsetY;
+    
+    fab.style.left = x + 'px';
+    fab.style.top = y + 'px';
+    fab.style.bottom = 'auto'; 
+    fab.style.right = 'auto';  
+}
+
+function endDrag() {
+    if (!isDragging) return;
+    isDragging = false;
+    
+    fab.classList.add('fab-pop');
+    setTimeout(() => {
+        fab.classList.remove('fab-pop');
+        fab.style.animation = "floating 3s ease-in-out infinite";
+    }, 300);
+}
+
+fab.addEventListener('mousedown', startDrag);
+fab.addEventListener('touchstart', startDrag);
+window.addEventListener('mousemove', drag);
+window.addEventListener('touchmove', drag, { passive: false });
+window.addEventListener('mouseup', endDrag);
+window.addEventListener('touchend', endDrag);
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</body>
+</html>
 
 
 
