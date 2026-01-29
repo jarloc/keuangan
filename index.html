@@ -59,7 +59,10 @@ table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
-  border: none !important; /* Pastikan tidak ada bingkai luar */
+  border: none !important;
+ 
+  border-left: 0 !important;
+  border-right: 0 !important;
 }
 
 th, td {
@@ -109,7 +112,15 @@ button:hover{box-shadow:0 0 20px var(--gold)}
 #welcome button{ margin-top:12px }
 #main{display:none}
 header{text-align:center;padding:20px;border-bottom:1px solid #333}
-.card{margin:20px;padding:20px;border:1px solid #333;border-radius:16px}
+.card {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #333;
+  border-radius: 16px;
+  /* HAPUS BINGKAI KIRI DAN KANAN */
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
 .saldo {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Bagi dua kolom */
@@ -489,6 +500,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
