@@ -29,12 +29,7 @@
 
 <style>
 :root{--gold:#d4af37;}
-body {
-    /* Gradasi gelap biar efek kacanya punya 'nyawa' */
-    background: radial-gradient(circle at top left, #1a1a2e, #16213e, #0f3460);
-    background-attachment: fixed; /* Biar pas di-scroll gradasinya gak ikut kegulung */
-    min-height: 100vh;
-}
+body,html{margin:0;height:100%;background:#000;color:#fff;font-family:Segoe UI}
 button {
     cursor: pointer;
     border-radius: 24px;
@@ -46,6 +41,12 @@ button {
     font-family: inherit;
 }
 
+#welcome button {
+    width: 85%;
+    max-width: 400px;
+    padding: 15px 0;
+    margin-top: 12px;
+}
 
 .modal-content button {
     width: 100%;
@@ -103,6 +104,14 @@ th {
   letter-spacing: 0.5px;
 }
 button:hover{box-shadow:0 0 20px var(--gold)}
+#welcome{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  #welcome h1{
+  font-size:60px;
+  margin: 10px 0;
+}
+#welcome input{margin:6px;width:600px;padding:10px;background:#111;color:#fff;border:1px solid var(--gold);border-radius:10px}
+#welcome button{ margin-top:12px }
+#main{display:none}
 header {
     text-align: center;
     padding: 20px 0 30px 0;
@@ -113,16 +122,13 @@ header {
 }
 .card {
     margin: 20px auto;
-    width: 95%;   
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-top: 0.5px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
-    border-left: 0.5px solid rgba(255, 255, 255, 0.1);
-    border-right: 0.5px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-    border-radius: 20px;
+    width: 95%;
+    border-top: 0.5px solid var(--gold);
+    border-bottom: 0.5px solid var(--gold);
+    border-left: 0;
+    border-right: 0;
+    box-sizing: border-box;
+    padding: 15px 0;
 }
 .saldo {
   display: grid;
@@ -224,6 +230,19 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </style>
 </head>
 <body>
+<div id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:sans-serif;">
+    <div style="color:#d4af37; font-size:20px; font-weight:bold; letter-spacing:1px; margin-bottom:10px;">HARAP TUNGGU SEBENTAR...</div>
+    <div id="loading-msg" style="color:#fff; font-size:13px; opacity:0.8;">Sedang sinkronisasi data...</div>
+    </div>
+<!-- ===== WELCOME SCREEN ===== -->
+<div id="welcome">
+  <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
+  <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <input id="email" placeholder="Email Admin">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">LOGIN</button>
+</div>
 
 <!-- ===== MAIN APP ===== -->
 <div id="main">
@@ -275,12 +294,22 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </div>
 
 <script>
+// Fungsi sakti buat nampilin si satpam
+function showLoading(pesan = "Sedang memproses...") {
+    document.getElementById("loading-msg").textContent = pesan;
+    document.getElementById("loading-overlay").style.display = "flex";
+}
+
+// Fungsi buat nyuruh si satpam pergi
+function hideLoading() {
+    document.getElementById("loading-overlay").style.display = "none";
+}
 // Inisialisasi Firestore
 const db = firebase.firestore();
 
 let atm = 0, cash = 0, data = [], periode = {};
 const bulanEl = document.getElementById("bulan"), tahunEl = document.getElementById("tahun");
-const bulanNama = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
+const bulanNama = ["JANUARI","FEBRUARI","MAARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
 
 // Setting Dropdown & Periode
 bulanNama.forEach((b, i) => bulanEl.innerHTML += `<option value="${i + 1}">${b}</option>`);
@@ -298,7 +327,8 @@ async function load() {
     const user = auth.currentUser;
     if (!user) return;
 
-    document.getElementById("list").innerHTML = "<tr><td colspan='4' style='text-align:center'>Memuat data...</td></tr>";
+    // 1. Panggil Satpam: Kunci layar total biar gak ada salah input
+    showLoading("Sedang sinkronisasi data dari server...");
 
     try {
         const docRef = db.collection("keuangan").doc(`${user.uid}_${key()}`);
@@ -310,30 +340,47 @@ async function load() {
             cash = cloudData.cash || 0;
             data = cloudData.transaksi || [];
         } else {
+            // Data bulan baru masih kosong
             atm = 0; cash = 0; data = [];
         }
+
+        // 2. Render data ke tabel
         render();
+
+        // 3. PENTING: Pindahkan layar ke Menu Utama HANYA SETELAH data beres
+        document.getElementById("welcome").style.display = "none";
+        document.getElementById("main").style.display = "block";
+
     } catch (e) {
         console.error("Error loading:", e);
+        alert("Gagal ambil data: " + e.message);
+    } finally {
+        // 4. Buka kunci layar setelah semua proses selesai
+        hideLoading();
     }
 }
-
 // Fungsi Simpan Data ke Firebase (Cloud)
 async function save() {
     const user = auth.currentUser;
     if (!user) return;
+
     try {
+        // Proses kirim ke Firebase
         await db.collection("keuangan").doc(`${user.uid}_${key()}`).set({
             atm: atm,
             cash: cash,
             transaksi: data,
             lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
         });
+        
+        console.log("Data berhasil sinkron ke Cloud.");
+        
     } catch (e) {
-        alert("Gagal simpan ke Cloud: " + e.message);
+        // Lempar error ke fungsi pemanggil (fungsi simpan)
+        // supaya satpam loading gak buru-buru tutup kalau server gagal nerima data
+        throw e; 
     }
 }
-
 // Fungsi Tampilan (Render)
 function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
 
@@ -375,28 +422,41 @@ function openForm() {
 function closeForm() { document.getElementById("modal").style.display = "none"; }
 
 async function hapusData(index) {
-    if (!confirm("Yakin mau hapus data ini?")) return;
+    if (!confirm("Yakin mau hapus data ini, Jar?")) return;
 
-    const item = data[index];
-    
-    // 1. Balikin saldonya dulu sebelum dihapus
-    if (item.jenis === "masuk") {
-        item.metode === "atm" ? atm -= item.nominal : cash -= item.nominal;
-    } else {
-        item.metode === "atm" ? atm += item.nominal : cash += item.nominal;
+    // 1. Panggil Satpam
+    showLoading("Sedang menghapus data...");
+
+    try {
+        const item = data[index];
+        // Balikin saldo dulu sebelum dihapus
+        if (item.jenis === "masuk") {
+            item.metode === "atm" ? atm -= item.nominal : cash -= item.nominal;
+        } else {
+            item.metode === "atm" ? atm += item.nominal : cash += item.nominal;
+        }
+
+        // Buang dari list (array)
+        data.splice(index, 1);
+
+        // 2. Simpan ke Cloud (Wajib await biar Satpam nunggu)
+        await save();
+        
+        // 3. Update tampilan
+        render();
+    } catch (e) {
+        alert("Gagal hapus: " + e.message);
+        load(); // Refresh data biar saldo gak kacau kalau gagal
+    } finally {
+        // 4. Lepas Satpam
+        hideLoading();
     }
-
-    // 2. Buang dari list (array)
-    data.splice(index, 1);
-
-    // 3. Update tampilan dan simpan ke Cloud
-    render();
-    await save();
 }
-// 1. Tambahkan variabel status di bagian atas script
+
+// 1. Variabel status
 let modeEdit = false;
 let modeHapus = false;
-let editIndex = null; // Penting: Buat nandaian baris mana yang lagi di edit
+let editIndex = null; 
 
 // 2. Fungsi buat mati-nyalain mode
 function toggleMode(tipe) {
@@ -411,50 +471,34 @@ function toggleMode(tipe) {
     const bE = document.getElementById("btnModeEdit");
     const bH = document.getElementById("btnModeHapus");
 
-    // Logika Tombol EDIT
-    if (modeEdit) {
-        bE.style.background = "blue";
-        bE.style.color = "white";
-        bE.style.borderColor = "blue";
-        bE.textContent = "SELESAI";
-    } else {
-        // Balikkan ke GOLD
-        bE.style.background = "transparent";
-        bE.style.color = "var(--gold)";
-        bE.style.borderColor = "var(--gold)";
-        bE.textContent = "EDIT";
-    }
+    // Gaya tombol EDIT
+    bE.style.background = modeEdit ? "blue" : "transparent";
+    bE.style.color = modeEdit ? "white" : "var(--gold)";
+    bE.style.borderColor = modeEdit ? "blue" : "var(--gold)";
+    bE.textContent = modeEdit ? "SELESAI" : "EDIT";
 
-    // Logika Tombol HAPUS
-    if (modeHapus) {
-        bH.style.background = "red";
-        bH.style.color = "white";
-        bH.style.borderColor = "red";
-        bH.textContent = "SELESAI";
-    } else {
-        // Balikkan ke GOLD
-        bH.style.background = "transparent";
-        bH.style.color = "var(--gold)";
-        bH.style.borderColor = "var(--gold)";
-        bH.textContent = "HAPUS";
-    }
+    // Gaya tombol HAPUS
+    bH.style.background = modeHapus ? "red" : "transparent";
+    bH.style.color = modeHapus ? "white" : "var(--gold)";
+    bH.style.borderColor = modeHapus ? "red" : "var(--gold)";
+    bH.textContent = modeHapus ? "SELESAI" : "HAPUS";
 
     render();
 }
-  function bukaEdit(index) {
+
+function bukaEdit(index) {
     const item = data[index];
-    editIndex = index; // Kita tandai baris mana yang mau diubah
+    editIndex = index; 
     
-    // Masukin data lama ke kotak-kotak input
     document.getElementById("tglInput").value = item.tglAsli;
     document.getElementById("jenis").value = item.jenis;
     document.getElementById("metode").value = item.metode;
     document.getElementById("ket").value = item.ket;
     document.getElementById("nominal").value = item.nominal;
     
-    // Buka modalnya biar lo tinggal ganti-ganti isinya
     document.getElementById("modal").style.display = "flex";
 }
+
 async function simpan() {
     const tglPilihan = document.getElementById("tglInput").value;
     const j = document.getElementById("jenis").value;
@@ -464,61 +508,82 @@ async function simpan() {
 
     if (!n || !k || !tglPilihan) return alert("Isi semua data!");
 
-    const d = new Date(tglPilihan);
-    const tglTabel = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    // 1. Panggil Satpam
+    showLoading("Sedang menyimpan data...");
 
-    // --- LOGIKA EDIT DI SINI ---
-    if (editIndex !== null) {
-        const lama = data[editIndex];
-        if (lama.jenis === "masuk") {
-            lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal;
-        } else {
-            lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal;
+    try {
+        const d = new Date(tglPilihan);
+        const tglTabel = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+
+        // Logika EDIT
+        if (editIndex !== null) {
+            const lama = data[editIndex];
+            if (lama.jenis === "masuk") {
+                lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal;
+            } else {
+                lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal;
+            }
+            data.splice(editIndex, 1);
         }
-        // Buang data lama dari list supaya nanti diganti yang baru
-        data.splice(editIndex, 1);
-    }
-        // Hitung saldo baru berdasarkan input yang baru
-    if (j === "masuk") {
-        m === "atm" ? atm += n : cash += n;
-    } else {
-        m === "atm" ? atm -= n : cash -= n;
-    }
 
-    // Masukkan data (bisa data baru atau data hasil revisi)
-    data.push({
-        tgl: tglTabel,
-        ket: k,
-        metode: m,
-        jenis: j,
-        nominal: n,
-        tglAsli: tglPilihan
-    });
+        // Hitung saldo baru
+        if (j === "masuk") {
+            m === "atm" ? atm += n : cash += n;
+        } else {
+            m === "atm" ? atm -= n : cash -= n;
+        }
 
-    editIndex = null; // Reset biar balik ke mode input biasa
-    render();
-    closeForm();
-    await save();
-    
-    // Kosongkan form
-    document.getElementById("nominal").value = "";
-    document.getElementById("ket").value = "";
+        data.push({
+            tgl: tglTabel,
+            ket: k,
+            metode: m,
+            jenis: j,
+            nominal: n,
+            tglAsli: tglPilihan
+        });
+
+        // 2. Simpan ke Cloud
+        await save();
+
+        editIndex = null;
+        render();
+        closeForm();
+
+        // Kosongkan form
+        document.getElementById("nominal").value = "";
+        document.getElementById("ket").value = "";
+
+    } catch (e) {
+        alert("Gagal simpan: " + e.message);
+    } finally {
+        // 3. Lepas Satpam
+        hideLoading();
+    }
 }
 
 function login() {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
-    auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+
+    if (!email || !pass) return alert("Email & Password jangan kosong!");
+
+    showLoading("Sedang memverifikasi admin...");
+
+    auth.signInWithEmailAndPassword(email, pass).catch(e => {
+        hideLoading();
+        alert("Gagal Login: " + e.message);
+    });
 }
 
+// KUNCI UTAMA: Urutan Load Data yang bener
 auth.onAuthStateChanged(user => {
     if (user) {
-        document.getElementById("welcome").style.display = "none";
-        document.getElementById("main").style.display = "block";
-        load();
+        // Jangan buka 'main' dulu! Biarkan load() yang dapet data baru buka pintunya.
+        load(); 
     } else {
         document.getElementById("welcome").style.display = "flex";
         document.getElementById("main").style.display = "none";
+        hideLoading();
     }
 });
 </script>
@@ -598,6 +663,7 @@ fab.onclick = function(e) {
 </html>
 </body>
 </html>
+
 
 
 
