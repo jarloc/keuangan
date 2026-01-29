@@ -149,14 +149,15 @@ header {
 }
 /* Animasi Mengapung & Membal */
 @keyframes floating {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+    0% { transform: translate(var(--tx, 0), 0px); }
+    50% { transform: translate(var(--tx, 0), -10px); }
+    100% { transform: translate(var(--tx, 0), 0px); }
 }
+
 @keyframes pop {
-    0% { transform: scale(0.9); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
+    0% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.9); }
+    50% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.2); }
+    100% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(1); }
 }
 
 .fab {
@@ -171,17 +172,18 @@ header {
     font-size: 28px;
     border: none;
     box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    z-index: 999;
+    z-index: 1001;
     display: flex;
     justify-content: center;
     align-items: center;
     animation: floating 3s ease-in-out infinite;
+    touch-action: none;
     will-change: transform;
-    touch-action: none; /* Wajib biar layar gak ikut scroll pas ditarik */
+    cursor: move;
 }
 
-.fab:active {
-    transform: scale(0.9) !important;
+.fab:active:not(.dragging) {
+    transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.9);
     animation: none;
 }
 
@@ -236,7 +238,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -550,13 +552,14 @@ window.addEventListener("beforeunload", function (e) {
 <script>
   const fab = document.querySelector('.fab');
 let isDragging = false, startX, startY;
-let posX = 0, posY = 0; // Simpan posisi terakhir
+let posX = 0, posY = 0; 
 
 function startDrag(e) {
     isDragging = false;
     fab.style.animation = "none";
     const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+    
     startX = clientX - posX;
     startY = clientY - posY;
 }
@@ -567,6 +570,7 @@ function drag(e) {
 
     if (Math.abs(clientX - (startX + posX)) > 5 || Math.abs(clientY - (startY + posY)) > 5) {
         isDragging = true;
+        fab.classList.add('dragging');
     }
 
     if (!isDragging) return;
@@ -575,8 +579,10 @@ function drag(e) {
     posX = clientX - startX;
     posY = clientY - startY;
 
-    // Pakai translate3d biar halus banget dan gak kedut pas scroll
-    fab.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
+    // Update posisi pake variabel CSS biar animasinya tetep sinkron di titik baru
+    fab.style.setProperty('--tx', `${posX}px`);
+    fab.style.setProperty('--ty', `${posY}px`);
+    fab.style.transform = `translate(${posX}px, ${posY}px)`;
 }
 
 function endDrag(e) {
@@ -585,30 +591,32 @@ function endDrag(e) {
         e.stopPropagation();
     }
     
+    fab.classList.remove('dragging');
     window.removeEventListener('mousemove', drag);
     window.removeEventListener('touchmove', drag);
     
     fab.classList.add('fab-pop');
     setTimeout(() => {
         fab.classList.remove('fab-pop');
-        // Balikin animasi mengapung tanpa ngerusak posisi gesernya
         fab.style.animation = "floating 3s ease-in-out infinite";
         setTimeout(() => isDragging = false, 100);
     }, 300);
 }
 
-// Event Listeners
 fab.addEventListener('mousedown', (e) => {
     startDrag(e);
     window.addEventListener('mousemove', drag);
 });
+
 fab.addEventListener('touchstart', (e) => {
     startDrag(e);
     window.addEventListener('touchmove', drag, { passive: false });
 });
+
 window.addEventListener('mouseup', endDrag, true);
 window.addEventListener('touchend', endDrag, true);
 
+// Cegah klik kebuka kalau baru selesai drag
 fab.addEventListener('click', (e) => {
     if (isDragging) {
         e.preventDefault();
@@ -621,6 +629,7 @@ fab.addEventListener('click', (e) => {
 </html>
 </body>
 </html>
+
 
 
 
