@@ -29,7 +29,12 @@
 
 <style>
 :root{--gold:#d4af37;}
-body,html{margin:0;height:100%;background:#000;color:#fff;font-family:Segoe UI}
+body {
+    /* Gradasi gelap biar efek kacanya punya 'nyawa' */
+    background: radial-gradient(circle at top left, #1a1a2e, #16213e, #0f3460);
+    background-attachment: fixed; /* Biar pas di-scroll gradasinya gak ikut kegulung */
+    min-height: 100vh;
+}
 button {
     cursor: pointer;
     border-radius: 24px;
@@ -41,12 +46,6 @@ button {
     font-family: inherit;
 }
 
-#welcome button {
-    width: 85%;
-    max-width: 400px;
-    padding: 15px 0;
-    margin-top: 12px;
-}
 
 .modal-content button {
     width: 100%;
@@ -104,14 +103,6 @@ th {
   letter-spacing: 0.5px;
 }
 button:hover{box-shadow:0 0 20px var(--gold)}
-#welcome{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
-  #welcome h1{
-  font-size:60px;
-  margin: 10px 0;
-}
-#welcome input{margin:6px;width:600px;padding:10px;background:#111;color:#fff;border:1px solid var(--gold);border-radius:10px}
-#welcome button{ margin-top:12px }
-#main{display:none}
 header {
     text-align: center;
     padding: 20px 0 30px 0;
@@ -122,13 +113,16 @@ header {
 }
 .card {
     margin: 20px auto;
-    width: 95%;
-    border-top: 0.5px solid var(--gold);
-    border-bottom: 0.5px solid var(--gold);
-    border-left: 0;
-    border-right: 0;
-    box-sizing: border-box;
-    padding: 15px 0;
+    width: 95%;   
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-left: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-right: 0.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
 }
 .saldo {
   display: grid;
@@ -231,16 +225,6 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </head>
 <body>
 
-<!-- ===== WELCOME SCREEN ===== -->
-<div id="welcome">
-  <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
-  <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.8</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
-  <input id="email" placeholder="Email Admin">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">LOGIN</button>
-</div>
-
 <!-- ===== MAIN APP ===== -->
 <div id="main">
 <header>
@@ -296,7 +280,7 @@ const db = firebase.firestore();
 
 let atm = 0, cash = 0, data = [], periode = {};
 const bulanEl = document.getElementById("bulan"), tahunEl = document.getElementById("tahun");
-const bulanNama = ["JANUARI","FEBRUARI","MAARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
+const bulanNama = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
 
 // Setting Dropdown & Periode
 bulanNama.forEach((b, i) => bulanEl.innerHTML += `<option value="${i + 1}">${b}</option>`);
