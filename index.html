@@ -80,6 +80,14 @@ td:nth-child(2), th:nth-child(2) {
   word-break: break-word; /* Potong kata kalau kepanjangan banget */
   min-width: 100px;
 }
+  .kat-badge { 
+    font-size: 9px; 
+    color: #aaa; 
+    display: block; 
+    margin-top: 2px; 
+    font-style: italic; 
+    text-transform: lowercase;
+}
 
 /* 2. Kunci Lebar Nominal biar gak kegeser-geser */
 td:nth-child(4), th:nth-child(4) {
@@ -238,7 +246,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -282,6 +290,15 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
   <option value="masuk">Pemasukan</option>
   <option value="keluar">Pengeluaran</option>
 </select>
+<select id="kategori">
+  <option value="umum">📦 Umum / Lainnya</option>
+  <option value="makan">🍲 Makan & Minum</option>
+  <option value="belanja">🛒 Belanja Pokok</option>
+  <option value="jajan">☕ Jajan / Hobi</option>
+  <option value="transport">🚗 Transportasi</option>
+  <option value="tagihan">⚡ Tagihan / Cicilan</option>
+</select>
+
 <select id="metode">
   <option value="atm">ATM</option>
   <option value="cash">Cash</option>
@@ -393,8 +410,10 @@ function render() {
     document.getElementById("list").innerHTML = data.map((d, i) => `
         <tr>
             <td>${d.tgl}</td>
-            <td>${d.ket}</td>
-            <td>${d.metode.toUpperCase()}</td>
+<td>
+    <div style="font-weight:bold">${d.ket}</div>
+    <span class="kat-badge">#${d.kategori || 'umum'}</span>
+</td>            <td>${d.metode.toUpperCase()}</td>
             <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">
                 ${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}
             </td>
@@ -495,6 +514,8 @@ function bukaEdit(index) {
     document.getElementById("metode").value = item.metode;
     document.getElementById("ket").value = item.ket;
     document.getElementById("nominal").value = item.nominal;
+  
+    document.getElementById("kategori").value = item.kategori || "umum";
     
     document.getElementById("modal").style.display = "flex";
 }
@@ -505,6 +526,7 @@ async function simpan() {
     const m = document.getElementById("metode").value;
     const n = +document.getElementById("nominal").value;
     const k = document.getElementById("ket").value;
+    const kat = document.getElementById("kategori").value;
 
     if (!n || !k || !tglPilihan) return alert("Isi semua data!");
 
@@ -540,6 +562,7 @@ async function simpan() {
             jenis: j,
             nominal: n,
             tglAsli: tglPilihan
+            kategori: kat
         });
 
         // 2. Simpan ke Cloud
@@ -663,6 +686,7 @@ fab.onclick = function(e) {
 </html>
 </body>
 </html>
+
 
 
 
