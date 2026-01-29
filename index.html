@@ -176,7 +176,7 @@ header {
     justify-content: center;
     align-items: center;
     animation: floating 3s ease-in-out infinite;
-    transition: transform 0.1s ease;
+    will-change: transform;
     touch-action: none; /* Wajib biar layar gak ikut scroll pas ditarik */
 }
 
@@ -236,7 +236,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -548,35 +548,35 @@ window.addEventListener("beforeunload", function (e) {
 </script>
 
 <script>
-const fab = document.querySelector('.fab');
-let isDragging = false, startX, startY, offsetX, offsetY;
+  const fab = document.querySelector('.fab');
+let isDragging = false, startX, startY;
+let posX = 0, posY = 0; // Simpan posisi terakhir
 
 function startDrag(e) {
-    isDragging = false; // Reset status setiap mulai sentuh
+    isDragging = false;
     fab.style.animation = "none";
     const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-    startX = clientX; startY = clientY;
-    offsetX = clientX - fab.getBoundingClientRect().left;
-    offsetY = clientY - fab.getBoundingClientRect().top;
+    startX = clientX - posX;
+    startY = clientY - posY;
 }
 
 function drag(e) {
     const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-    
-    // Kalau geser lebih dari 5 pixel, baru dianggap dragging (bukan klik)
-    if (Math.abs(clientX - startX) > 5 || Math.abs(clientY - startY) > 5) {
+
+    if (Math.abs(clientX - (startX + posX)) > 5 || Math.abs(clientY - (startY + posY)) > 5) {
         isDragging = true;
     }
 
     if (!isDragging) return;
     if (e.type === 'touchmove') e.preventDefault();
-    
-    fab.style.left = (clientX - offsetX) + 'px';
-    fab.style.top = (clientY - offsetY) + 'px';
-    fab.style.bottom = 'auto'; 
-    fab.style.right = 'auto';
+
+    posX = clientX - startX;
+    posY = clientY - startY;
+
+    // Pakai translate3d biar halus banget dan gak kedut pas scroll
+    fab.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
 }
 
 function endDrag(e) {
@@ -585,36 +585,30 @@ function endDrag(e) {
         e.stopPropagation();
     }
     
-    // 1. HAPUS COMMAND DRAG (Ini kuncinya biar gak nempel terus)
     window.removeEventListener('mousemove', drag);
     window.removeEventListener('touchmove', drag);
     
-    // 2. Efek visual pas dilepas
     fab.classList.add('fab-pop');
     setTimeout(() => {
         fab.classList.remove('fab-pop');
+        // Balikin animasi mengapung tanpa ngerusak posisi gesernya
         fab.style.animation = "floating 3s ease-in-out infinite";
-        // Kasih jeda dikit buat reset status dragging
-        setTimeout(() => { isDragging = false; }, 100);
+        setTimeout(() => isDragging = false, 100);
     }, 300);
 }
 
-// Pas ditekan, baru kita pasang perintah "drag" ke window
+// Event Listeners
 fab.addEventListener('mousedown', (e) => {
     startDrag(e);
     window.addEventListener('mousemove', drag);
 });
-
 fab.addEventListener('touchstart', (e) => {
     startDrag(e);
     window.addEventListener('touchmove', drag, { passive: false });
 });
-
-// Pas dilepas (di mana aja di layar), jalankan fungsi endDrag
 window.addEventListener('mouseup', endDrag, true);
 window.addEventListener('touchend', endDrag, true);
 
-// Mencegah klik kebuka kalau baru selesai drag
 fab.addEventListener('click', (e) => {
     if (isDragging) {
         e.preventDefault();
@@ -627,6 +621,7 @@ fab.addEventListener('click', (e) => {
 </html>
 </body>
 </html>
+
 
 
 
