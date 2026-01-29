@@ -236,7 +236,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.2</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -581,40 +581,53 @@ function drag(e) {
 
 function endDrag(e) {
     if (isDragging) {
-        // Kalau lagi drag, jangan biarkan event klik tembus ke openForm()
         e.preventDefault();
         e.stopPropagation();
     }
     
+    // 1. HAPUS COMMAND DRAG (Ini kuncinya biar gak nempel terus)
+    window.removeEventListener('mousemove', drag);
+    window.removeEventListener('touchmove', drag);
+    
+    // 2. Efek visual pas dilepas
     fab.classList.add('fab-pop');
     setTimeout(() => {
         fab.classList.remove('fab-pop');
         fab.style.animation = "floating 3s ease-in-out infinite";
-        // Delay dikit reset dragging-nya biar aman
+        // Kasih jeda dikit buat reset status dragging
         setTimeout(() => { isDragging = false; }, 100);
     }, 300);
 }
 
-// Mencegah klik terbuka kalau baru selesai drag
+// Pas ditekan, baru kita pasang perintah "drag" ke window
+fab.addEventListener('mousedown', (e) => {
+    startDrag(e);
+    window.addEventListener('mousemove', drag);
+});
+
+fab.addEventListener('touchstart', (e) => {
+    startDrag(e);
+    window.addEventListener('touchmove', drag, { passive: false });
+});
+
+// Pas dilepas (di mana aja di layar), jalankan fungsi endDrag
+window.addEventListener('mouseup', endDrag, true);
+window.addEventListener('touchend', endDrag, true);
+
+// Mencegah klik kebuka kalau baru selesai drag
 fab.addEventListener('click', (e) => {
     if (isDragging) {
         e.preventDefault();
         e.stopImmediatePropagation();
     }
 }, true);
-
-fab.addEventListener('mousedown', startDrag);
-fab.addEventListener('touchstart', startDrag);
-window.addEventListener('mousemove', drag);
-window.addEventListener('touchmove', drag, { passive: false });
-window.addEventListener('mouseup', endDrag, true);
-window.addEventListener('touchend', endDrag, true);
 </script>
 
 </body>
 </html>
 </body>
 </html>
+
 
 
 
