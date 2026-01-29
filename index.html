@@ -66,30 +66,28 @@ table {
 }
 
 th, td {
-    padding: 12px 5px;
-    font-size: 13px;
-    color: #fff;
-    /* RESET TOTAL SEMUA JENIS GARIS */
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    /* PAKSA HANYA GARIS BAWAH */
-    border-bottom: 1px solid #333 !important;
-    background-color: transparent !important;
-    white-space: nowrap;
+  padding: 12px 5px;
+  font-size: 13px;
+  color: #fff;
+  border: none !important;
+  border-bottom: 1px solid #333 !important;
+  /* JANGAN pakai white-space: nowrap di sini secara global */
 }
 
-/* KHUSUS UNTUK NOMINAL: Pastikan gak ada sisa border kanan */
-th:nth-child(4), td:nth-child(4) {
-    border-right: none !important;
-    text-align: right;
-    padding-right: 15px;
+/* 1. Paksa Keterangan buat ganti baris kalau kepanjangan */
+td:nth-child(2), th:nth-child(2) {
+  white-space: normal !important; /* Biar teks turun ke bawah, gak bocor samping */
+  word-break: break-word; /* Potong kata kalau kepanjangan banget */
+  min-width: 100px;
 }
 
-/* Kasih jarak di kolom Nominal biar angka gak nempel garis hayalan */
+/* 2. Kunci Lebar Nominal biar gak kegeser-geser */
 td:nth-child(4), th:nth-child(4) {
   text-align: right;
-  padding-right: 15px;
+  padding-right: 10px;
+  width: 90px !important; /* Kunci lebar kolom nominal */
+  min-width: 90px !important;
+  white-space: nowrap; /* Nominal tetep satu baris biar rapi */
 }
 /* Atur lebar kolom secara manual agar pas di HP */
 th:nth-child(1), td:nth-child(1) { width: 45px; } /* Tgl */
@@ -187,7 +185,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.5.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.5.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -500,6 +498,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
