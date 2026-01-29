@@ -114,20 +114,21 @@ button:hover{box-shadow:0 0 20px var(--gold)}
 #main{display:none}
 header {
     text-align: center;
-    padding: 20px;
-    border-bottom: 1px solid var(--gold); /* Contoh: ubah tebal & warna */
-    width: 95%;  /* Atur lebar horizontal garis */
-    margin: 0 auto; /* Biar center */
-    box-sizing: border-box; /* Pastikan lebar termasuk padding */
+    padding: 20px 0 30px 0;
+    border-bottom: 1px solid var(--gold);
+    width: 95%;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 .card {
-    margin: 0 auto; /* Biar center sama seperti header */
-    width: 95%;     /* Samakan dengan header */
-    border-top: 0.5px solid var(--gold);   /* Contoh: ubah tebal & warna */
+    margin: 20px auto;
+    width: 95%;
+    border-top: 0.5px solid var(--gold);
     border-bottom: 0.5px solid var(--gold);
     border-left: 0;
     border-right: 0;
     box-sizing: border-box;
+    padding: 15px 0;
 }
 .saldo {
   display: grid;
@@ -195,7 +196,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.5.9</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.6.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -508,6 +509,7 @@ window.addEventListener("beforeunload", function (e) {
 
 </body>
 </html>
+
 
 
 
