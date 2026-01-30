@@ -265,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.2</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -471,38 +471,36 @@ async function save() {
 function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
 
 function render() {
-        
+    // 1. Hitung Tabungan & Target
     let tabunganBulanIni = data.filter(d => d.kategori === 'tabungan')
                                .reduce((sum, item) => sum + item.nominal, 0);
     
     let totalTabungan = (window.tabunganLalu || 0) + tabunganBulanIni;
-    
     let persen = target > 0 ? Math.min((totalTabungan / target) * 100, 100) : 0;
     
+    // 2. Update Tampilan Saldo & Progress Bar
     document.getElementById("barTarget").style.width = persen + "%";
     document.getElementById("persenTarget").textContent = Math.round(persen) + "%";
     document.getElementById("infoTarget").textContent = `Terkumpul: Rp ${f(totalTabungan)} / Target: Rp ${f(target)}`;
-    
     document.getElementById("atm").textContent = f(atm);
     document.getElementById("cash").textContent = f(cash);
     document.getElementById("total").textContent = f(atm + cash);
     
+    // 3. Gambar Tabel dengan fitur Drag & Drop
     document.getElementById("list").innerHTML = data.map((d, i) => `
         <tr draggable="true" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})" style="cursor: move;">
             <td>${d.tgl}</td>
             <td>
                 <div style="font-weight:bold">${d.ket}</div>
-                <span class="kat-badge">
-                    ${ikonKategori[d.kategori] || '💳'} ${d.kategori || 'umum'}
-                </span>
+                <span class="kat-badge">${ikonKategori[d.kategori] || '💳'} ${d.kategori || 'umum'}</span>
             </td>
             <td>${d.metode.toUpperCase()}</td>
             <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">
                 ${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}
             </td>
             <td>
-                ${modeHapus ? `<button style="padding:5px 10px; width:auto; font-size:10px; background:red; color:white; border:none; border-radius:4px;" onclick="hapusData(${i})">X</button>` : ''}
-                ${modeEdit ? `<button style="padding:5px 10px; width:auto; font-size:10px; background:blue; color:white; border:none; border-radius:4px;" onclick="bukaEdit(${i})">Edit</button>` : ''}
+                ${modeHapus ? `<button style="padding:5px 10px; background:red; color:white; border:none; border-radius:4px;" onclick="hapusData(${i})">X</button>` : ''}
+                ${modeEdit ? `<button style="padding:5px 10px; background:blue; color:white; border:none; border-radius:4px;" onclick="bukaEdit(${i})">Edit</button>` : ''}
             </td>
         </tr>
     `).join("");
@@ -649,61 +647,39 @@ async function simpan() {
     try {
         const d = new Date(tglPilihan);
         const tglTabel = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
-
-        // Objek data baru yang mau disimpan
-        const dataBaru = {
-            tgl: tglTabel,
-            ket: k,
-            metode: m,
-            jenis: j,
-            nominal: n,
-            tglAsli: tglPilihan,
-            kategori: kat
-        };
+        const dataBaru = { tgl: tglTabel, ket: k, metode: m, jenis: j, nominal: n, tglAsli: tglPilihan, kategori: kat };
 
         if (editIndex !== null) {
-            // --- MODE EDIT ---
+            // Balikin saldo lama
             const lama = data[editIndex];
-            
-            // 1. Balikin saldo lama dulu
             if (lama.jenis === "masuk") {
                 lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal;
             } else {
                 lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal;
             }
-
-            // 2. TIMPA data di index yang sama (ini kuncinya biar gak pindah ke bawah)
+            // TIMPA di posisi semula
             data[editIndex] = dataBaru;
         } else {
-            // --- MODE INPUT BARU ---
+            // Data baru masuk paling bawah
             data.push(dataBaru);
         }
 
-        // 3. Hitung saldo baru (untuk Edit maupun Baru)
-        if (j === "masuk") {
-            m === "atm" ? atm += n : cash += n;
-        } else {
-            m === "atm" ? atm -= n : cash -= n;
-        }
+        // Hitung saldo baru
+        if (j === "masuk") { m === "atm" ? atm += n : cash += n; } 
+        else { m === "atm" ? atm -= n : cash -= n; }
 
-        // 4. Simpan ke Cloud
         await save();
-
         editIndex = null;
         render();
         closeForm();
-
-        // Kosongkan form
         document.getElementById("nominal").value = "";
         document.getElementById("ket").value = "";
-
     } catch (e) {
         alert("Gagal simpan: " + e.message);
     } finally {
         hideLoading();
     }
 }
-
 function login() {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
@@ -840,13 +816,6 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
-
-
-
-
-
-
-
 
 
 
