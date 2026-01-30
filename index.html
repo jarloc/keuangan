@@ -265,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.2</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -644,32 +644,14 @@ async function simpan() {
 
     if (!n || !k || !tglPilihan) return alert("Isi semua data!");
 
-    // 1. Panggil Satpam
     showLoading("Sedang menyimpan data...");
 
     try {
         const d = new Date(tglPilihan);
         const tglTabel = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
 
-        // Logika EDIT
-        if (editIndex !== null) {
-            const lama = data[editIndex];
-            if (lama.jenis === "masuk") {
-                lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal;
-            } else {
-                lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal;
-            }
-            data.splice(editIndex, 1);
-        }
-
-        // Hitung saldo baru
-        if (j === "masuk") {
-            m === "atm" ? atm += n : cash += n;
-        } else {
-            m === "atm" ? atm -= n : cash -= n;
-        }
-
-        data.push({
+        // Objek data baru yang mau disimpan
+        const dataBaru = {
             tgl: tglTabel,
             ket: k,
             metode: m,
@@ -677,9 +659,34 @@ async function simpan() {
             nominal: n,
             tglAsli: tglPilihan,
             kategori: kat
-        });
+        };
 
-        // 2. Simpan ke Cloud
+        if (editIndex !== null) {
+            // --- MODE EDIT ---
+            const lama = data[editIndex];
+            
+            // 1. Balikin saldo lama dulu
+            if (lama.jenis === "masuk") {
+                lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal;
+            } else {
+                lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal;
+            }
+
+            // 2. TIMPA data di index yang sama (ini kuncinya biar gak pindah ke bawah)
+            data[editIndex] = dataBaru;
+        } else {
+            // --- MODE INPUT BARU ---
+            data.push(dataBaru);
+        }
+
+        // 3. Hitung saldo baru (untuk Edit maupun Baru)
+        if (j === "masuk") {
+            m === "atm" ? atm += n : cash += n;
+        } else {
+            m === "atm" ? atm -= n : cash -= n;
+        }
+
+        // 4. Simpan ke Cloud
         await save();
 
         editIndex = null;
@@ -693,7 +700,6 @@ async function simpan() {
     } catch (e) {
         alert("Gagal simpan: " + e.message);
     } finally {
-        // 3. Lepas Satpam
         hideLoading();
     }
 }
