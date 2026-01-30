@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KEUANGAN PRIBADI V1.9.7</title>
+<title>KEUANGAN PRIBADI V1.9.8</title>
 
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -592,7 +592,6 @@ let modeEdit = false;
 let modeHapus = false;
 let editIndex = null; 
 
-// 2. Fungsi buat mati-nyalain mode
 // Fungsi buat buka-tutup Menu
 function toggleFabMenu() {
     const fab = document.getElementById('mainFab');
@@ -604,8 +603,8 @@ function toggleFabMenu() {
     const anakAnak = [btnT, btnE, btnH];
     anakAnak.forEach(btn => {
         btn.style.display = isHidden ? "block" : "none";
-        // Paksa semua anak (T, E, H) buat dugem bareng
         if (isHidden) {
+            // Reset animasi biar semua anak (T, E, H) dugem serempak
             btn.style.animation = 'none';
             void btn.offsetWidth; 
             btn.style.animation = 'floating 3s ease-in-out infinite';
@@ -623,7 +622,7 @@ function toggleFabMenu() {
         fab.textContent = "MENU";
     }
 }
-  // Fungsi toggle mode (Edit/Hapus) yang sudah diupdate ke FAB
+// Fungsi toggle mode (Edit/Hapus) yang sudah diupdate ke FAB
 function toggleMode(tipe) {
     if (tipe === 'edit') {
         modeEdit = !modeEdit;
@@ -861,6 +860,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
