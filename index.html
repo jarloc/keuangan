@@ -263,7 +263,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.2</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -605,17 +605,17 @@ function toggleFabMenu() {
     });
 
     if (isHidden) {
-        // Baju dibuka: Menu utama bengong & jadi X
         fab.style.animation = 'none';
         fab.style.marginBottom = '0'; 
         fab.textContent = "X";
     } else {
-        // Baju ditutup: Menu utama dugem lagi & jadi MENU
+        // Paksa animasi jalan lagi (Reset Dugem)
+        fab.style.animation = 'none';
+        void fab.offsetWidth; // Trik sakti biar animasi gak macet
         fab.style.animation = 'floating 3s ease-in-out infinite';
         fab.textContent = "MENU";
     }
 }
-
 // Fungsi toggle mode (Edit/Hapus) yang sudah diupdate ke FAB
 function toggleMode(tipe) {
     if (tipe === 'edit') {
