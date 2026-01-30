@@ -181,7 +181,9 @@ header {
 .fab:active {
     transform: scale(0.9);
 }
-
+.fab-sub {
+    animation: floating 3s ease-in-out infinite;
+}
 .fab-pop {
     animation: pop 0.3s ease-out;
 }
@@ -261,7 +263,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -305,10 +307,10 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </div>
 
 <div id="fab-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 1001; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-    <button id="mainFab" class="fab" onclick="toggleFabMenu()" style="position: static; margin: 0;">MENU</button>
-    <button id="btnTambahFab" onclick="openForm()" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #28a745; color: white; border: none; font-size: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">+</button>
-    <button id="btnEditFab" onclick="toggleMode('edit')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #007bff; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">EDIT</button>
-    <button id="btnHapusFab" onclick="toggleMode('hapus')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #dc3545; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">HAPUS</button>
+    <button id="mainFab" class="fab" style="position: static; margin: 0;">MENU</button>
+    <button id="btnTambahFab" class="fab-sub" onclick="openForm()" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #28a745; color: white; border: none; font-size: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">+</button>
+    <button id="btnEditFab" class="fab-sub" onclick="toggleMode('edit')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #007bff; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">EDIT</button>
+    <button id="btnHapusFab" class="fab-sub" onclick="toggleMode('hapus')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #dc3545; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">HAPUS</button>
 </div>
 </div>
 
@@ -601,14 +603,14 @@ function toggleFabMenu() {
     [btnT, btnE, btnH].forEach(btn => {
         btn.style.display = isHidden ? "block" : "none";
     });
-    
-    // Logika Dugem
+
     if (isHidden) {
-        // Kalau baju dibuka, menu utama bengong
+        // Baju dibuka: Menu utama bengong & jadi X
         fab.style.animation = 'none';
-        fab.textContent = "X"; 
+        fab.style.marginBottom = '0'; 
+        fab.textContent = "X";
     } else {
-        // Kalau baju ditutup, menu utama dugem lagi
+        // Baju ditutup: Menu utama dugem lagi & jadi MENU
         fab.style.animation = 'floating 3s ease-in-out infinite';
         fab.textContent = "MENU";
     }
@@ -764,42 +766,37 @@ fab.addEventListener('touchstart', () => {
     window.addEventListener('touchmove', moveFab, { passive: false });
 });
 
-// GANTI DI DALAM MOUSEUP
-window.addEventListener('mouseup', (e) => {
+// PERBAIKAN MOUSEUP
+window.addEventListener('mouseup', () => {
     window.removeEventListener('mousemove', moveFab);
     if (isDragging) {
         fab.classList.add('fab-pop');
-        setTimeout(() => {
-            fab.classList.remove('fab-pop');
-            // Cek: kalau menu lagi tutup (M), baru dugem lagi
-            if (document.getElementById("btnTambahFab").style.display === "none") {
-                fab.style.animation = 'floating 3s ease-in-out infinite';
-            }
-        }, 300);
+        // Langsung balikin dugem pas dilepas, kecuali menu lagi kebuka
+        if (document.getElementById("btnTambahFab").style.display === "none") {
+            fab.style.animation = 'floating 3s ease-in-out infinite';
+        }
+        setTimeout(() => fab.classList.remove('fab-pop'), 300);
     }
 });
 
-// GANTI DI DALAM TOUCHEND
-window.addEventListener('touchend', (e) => {
+// PERBAIKAN TOUCHEND
+window.addEventListener('touchend', () => {
     window.removeEventListener('touchmove', moveFab);
     if (isDragging) {
         fab.classList.add('fab-pop');
-        setTimeout(() => {
-            fab.classList.remove('fab-pop');
-            // Cek: kalau menu lagi tutup (M), baru dugem lagi
-            if (document.getElementById("btnTambahFab").style.display === "none") {
-                fab.style.animation = 'floating 3s ease-in-out infinite';
-            }
-        }, 300);
+        // Langsung balikin dugem pas dilepas, kecuali menu lagi kebuka
+        if (document.getElementById("btnTambahFab").style.display === "none") {
+            fab.style.animation = 'floating 3s ease-in-out infinite';
+        }
+        setTimeout(() => fab.classList.remove('fab-pop'), 300);
     }
 });
 
 // Biar menu gak kebuka/ketutup pas abis diseret (Drag)
 document.getElementById("mainFab").onclick = function(e) {
     if (isDragging) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        return false;
+        isDragging = false; // Reset status drag setelah selesai diseret
+        return;
     }
     toggleFabMenu();
 };
@@ -843,6 +840,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
