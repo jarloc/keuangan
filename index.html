@@ -261,7 +261,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.9</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -602,7 +602,16 @@ function toggleFabMenu() {
         btn.style.display = isHidden ? "block" : "none";
     });
     
-    document.getElementById("mainFab").textContent = isHidden ? "X" : "M";
+    // Logika Dugem
+    if (isHidden) {
+        // Kalau baju dibuka, menu utama bengong
+        fab.style.animation = 'none';
+        fab.textContent = "X"; 
+    } else {
+        // Kalau baju ditutup, menu utama dugem lagi
+        fab.style.animation = 'floating 3s ease-in-out infinite';
+        fab.textContent = "MENU";
+    }
 }
 
 // Fungsi toggle mode (Edit/Hapus) yang sudah diupdate ke FAB
@@ -755,25 +764,32 @@ fab.addEventListener('touchstart', () => {
     window.addEventListener('touchmove', moveFab, { passive: false });
 });
 
+// GANTI DI DALAM MOUSEUP
 window.addEventListener('mouseup', (e) => {
     window.removeEventListener('mousemove', moveFab);
     if (isDragging) {
-        // Efek pop pas dilepas
         fab.classList.add('fab-pop');
         setTimeout(() => {
             fab.classList.remove('fab-pop');
-            fab.style.animation = 'floating 3s ease-in-out infinite';
+            // Cek: kalau menu lagi tutup (M), baru dugem lagi
+            if (document.getElementById("btnTambahFab").style.display === "none") {
+                fab.style.animation = 'floating 3s ease-in-out infinite';
+            }
         }, 300);
     }
 });
 
+// GANTI DI DALAM TOUCHEND
 window.addEventListener('touchend', (e) => {
     window.removeEventListener('touchmove', moveFab);
     if (isDragging) {
         fab.classList.add('fab-pop');
         setTimeout(() => {
             fab.classList.remove('fab-pop');
-            fab.style.animation = 'floating 3s ease-in-out infinite';
+            // Cek: kalau menu lagi tutup (M), baru dugem lagi
+            if (document.getElementById("btnTambahFab").style.display === "none") {
+                fab.style.animation = 'floating 3s ease-in-out infinite';
+            }
         }, 300);
     }
 });
@@ -827,6 +843,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
