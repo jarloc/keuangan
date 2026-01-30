@@ -156,24 +156,20 @@ header {
     text-align: center;
 }
 .fab {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
     width: 60px;
     height: 60px;
     border-radius: 50%;
     background: var(--gold);
     color: #000;
-    font-size: 28px;
+    font-size: 14px; /* Kecilin dikit biar kata MENU muat */
+    font-weight: bold;
     border: none;
     box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    z-index: 1001;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: move;
     touch-action: none;
-    /* Animasi floating dibikin simpel */
     animation: floating 3s ease-in-out infinite;
 }
 
@@ -265,7 +261,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.6</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.7</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -831,6 +827,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
