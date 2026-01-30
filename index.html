@@ -263,7 +263,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.2</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -771,9 +771,11 @@ window.addEventListener('mouseup', () => {
     window.removeEventListener('mousemove', moveFab);
     if (isDragging) {
         fab.classList.add('fab-pop');
-        // Langsung balikin dugem pas dilepas, kecuali menu lagi kebuka
-        if (document.getElementById("btnTambahFab").style.display === "none") {
+        // Kunci: Jangan dugem kalau lagi mode "X"
+        if (fab.textContent === "MENU") {
             fab.style.animation = 'floating 3s ease-in-out infinite';
+        } else {
+            fab.style.animation = 'none';
         }
         setTimeout(() => fab.classList.remove('fab-pop'), 300);
     }
@@ -784,9 +786,11 @@ window.addEventListener('touchend', () => {
     window.removeEventListener('touchmove', moveFab);
     if (isDragging) {
         fab.classList.add('fab-pop');
-        // Langsung balikin dugem pas dilepas, kecuali menu lagi kebuka
-        if (document.getElementById("btnTambahFab").style.display === "none") {
+        // Kunci: Jangan dugem kalau lagi mode "X"
+        if (fab.textContent === "MENU") {
             fab.style.animation = 'floating 3s ease-in-out infinite';
+        } else {
+            fab.style.animation = 'none';
         }
         setTimeout(() => fab.classList.remove('fab-pop'), 300);
     }
@@ -840,6 +844,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
