@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KEUANGAN PRIBADI V1.9.9</title>
+<title>KEUANGAN PRIBADI V2.0.0</title>
 
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -190,8 +190,10 @@ header {
     border: none;
     font-size: 10px;
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    animation: floating 3s ease-in-out infinite;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);    
+}
+.joget {
+    animation: floating 3s ease-in-out infinite !important;
 }
 #btnTambahFab { font-size: 20px; } /* Khusus tambah biar gede dikit */
 .btn-hijau { background: #28a745; }
@@ -325,6 +327,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
     <button id="btnEditFab" class="fab-sub btn-biru" onclick="toggleMode('edit')">EDIT</button>
     <button id="btnHapusFab" class="fab-sub btn-merah" onclick="toggleMode('hapus')">HAPUS</button>
 </div>
+
 </div>
 
 <!-- ===== MODAL ===== -->
@@ -614,24 +617,25 @@ function toggleFabMenu() {
     const isHidden = btnT.style.display === "none";
 
     const anakAnak = [btnT, btnE, btnH];
+    
     anakAnak.forEach(btn => {
-        btn.style.display = isHidden ? "block" : "none";
         if (isHidden) {
-            // Reset animasi biar semua anak (T, E, H) dugem serempak
-            btn.style.animation = 'none';
-            void btn.offsetWidth; 
-            btn.style.animation = 'floating 3s ease-in-out infinite';
+            btn.style.display = "block";
+            // Jeda 10ms biar browser 'napas' dulu sebelum disuruh joget
+            setTimeout(() => {
+                btn.classList.add('joget');
+            }, 10);
+        } else {
+            btn.style.display = "none";
+            btn.classList.remove('joget');
         }
     });
 
     if (isHidden) {
-        fab.style.animation = 'none';
-        fab.style.marginBottom = '0'; 
+        fab.classList.remove('joget'); // Si MENU (X) anteng pas kebuka
         fab.textContent = "X";
     } else {
-        fab.style.animation = 'none';
-        void fab.offsetWidth; 
-        fab.style.animation = 'floating 3s ease-in-out infinite';
+        fab.classList.add('joget'); // Si MENU joget lagi pas ketutup
         fab.textContent = "MENU";
     }
 }
@@ -873,6 +877,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
