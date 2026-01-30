@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KEUANGAN PRIBADI</title>
+<title>KEUANGAN PRIBADI V1.9.7</title>
 
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -604,11 +604,12 @@ function toggleFabMenu() {
     const anakAnak = [btnT, btnE, btnH];
     anakAnak.forEach(btn => {
         btn.style.display = isHidden ? "block" : "none";
-         if (isHidden) {
+        // Paksa semua anak (T, E, H) buat dugem bareng
+        if (isHidden) {
             btn.style.animation = 'none';
             void btn.offsetWidth; 
             btn.style.animation = 'floating 3s ease-in-out infinite';
-        }        
+        }
     });
 
     if (isHidden) {
@@ -860,6 +861,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
