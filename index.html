@@ -265,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.0</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.1</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -471,8 +471,7 @@ async function save() {
 function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
 
 function render() {
-    data.sort((a, b) => new Date(a.tglAsli) - new Date(b.tglAsli));
-    
+        
     let tabunganBulanIni = data.filter(d => d.kategori === 'tabungan')
                                .reduce((sum, item) => sum + item.nominal, 0);
     
@@ -489,7 +488,7 @@ function render() {
     document.getElementById("total").textContent = f(atm + cash);
     
     document.getElementById("list").innerHTML = data.map((d, i) => `
-        <tr>
+        <tr draggable="true" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})" style="cursor: move;">
             <td>${d.tgl}</td>
             <td>
                 <div style="font-weight:bold">${d.ket}</div>
@@ -804,10 +803,38 @@ function setTarget() {
         save();   // Biar target tersimpan ke Firebase
     }
 }
+let indexSumber;
+
+function startDrag(i) {
+    indexSumber = i;
+}
+
+function allowDrop(e) {
+    e.preventDefault();
+}
+
+async function dropData(indexTujuan) {
+    // Tukar posisi di array
+    const dataDiseret = data[indexSumber];
+    data.splice(indexSumber, 1);
+    data.splice(indexTujuan, 0, dataDiseret);
+    
+    render(); // Update tampilan langsung
+    
+    showLoading("Menyimpan urutan baru...");
+    try {
+        await save(); // Simpan urutan permanen ke Firebase
+    } catch (e) {
+        alert("Gagal simpan urutan: " + e.message);
+    } finally {
+        hideLoading();
+    }
+}
 </script>
 
 </body>
 </html>
+
 
 
 
