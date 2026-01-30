@@ -235,6 +235,25 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
   flex: 1; /* Biar lebarnya bagi dua adil */
   margin-top: 0;
 }
+/* Styling tombol navigasi bulan */
+.nav-btn {
+    width: auto;
+    padding: 5px 15px;
+    background: #111;
+    color: var(--gold);
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+/* Efek pas tombol dipencet jari */
+.nav-btn:active {
+    background: var(--gold);
+    color: #000;
+    transform: scale(0.9);
+}
 </style>
 </head>
 <body>
@@ -246,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -257,14 +276,26 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <header>
   <h2 style="color:var(--gold); margin-bottom:10px;">KEUANGAN PRIBADI</h2>
   <div class="header-controls">
+    <button class="nav-btn" onclick="pindahBulan(-1)">❮</button>
     <select id="bulan"></select>
     <select id="tahun"></select>
+    <button class="nav-btn" onclick="pindahBulan(1)">❯</button>
   </div>
 </header>
 
 <div class="card saldo">
   <div class="box">ATM<br><strong id="atm">0</strong></div>
   <div class="box">CASH<br><strong id="cash">0</strong></div>
+  <div class="box" style="grid-column: 1 / span 2; text-align: left; padding: 15px; border-color: var(--gold);">
+    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px;">
+      <span>🎯 TARGET TABUNGAN</span>
+      <span id="persenTarget" style="color: var(--gold); font-weight: bold;">0%</span>
+    </div>
+    <div style="width: 100%; background: #222; height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #333;">
+      <div id="barTarget" style="width: 0%; height: 100%; background: linear-gradient(90deg, #b8860b, var(--gold)); transition: 1s ease;"></div>
+    </div>
+    <div id="infoTarget" onclick="setTarget()" style="font-size: 10px; color: #aaa; margin-top: 8px; cursor: pointer;">Klik di sini untuk atur target...</div>
+  </div>
   <div class="box">TOTAL<br><strong id="total">0</strong></div>
 </div>
 
@@ -339,7 +370,31 @@ function hideLoading() {
 // Inisialisasi Firestore
 const db = firebase.firestore();
 
-let atm = 0, cash = 0, data = [], periode = {};
+let atm = 0, cash = 0, data = [], periode = {}, target = 0;
+// Kamus Ikon Otomatis
+const ikonKategori = {
+    "umum": "💳",
+    "jajan": "☕",
+    "makan / minum diluar": "🍽️",
+    "bahan makanan": "🥕",
+    "belanja bulanan": "🛒",
+    "token listrik": "⚡",
+    "wifi": "🛜",
+    "pulsa / kuota": "📶",
+    "belanja paket": "📦",
+    "kesehatan / obat": "💊",
+    "hadiah / donasi": "🎁",
+    "hobi / liburan": "✈️",
+    "transportasi": "🚗",
+    "angsuran rumah": "🏠",
+    "perbaikan rumah": "🛠️",
+    "angsuran motor": "🛵",
+    "perbaikan dan perawatan motor": "🛠️",
+    "bensin motor": "⛽",
+    "perbaikan dan perawatan inventaris": "🛠️",
+    "bensin inventaris": "⛽",
+    "tabungan": "💰"
+};
 const bulanEl = document.getElementById("bulan"), tahunEl = document.getElementById("tahun");
 const bulanNama = ["JANUARI","FEBRUARI","MAARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
 
@@ -370,6 +425,7 @@ async function load() {
             const cloudData = doc.data();
             atm = cloudData.atm || 0;
             cash = cloudData.cash || 0;
+            target = cloudData.target || 0;
             data = cloudData.transaksi || [];
         } else {
             // Data bulan baru masih kosong
@@ -401,6 +457,7 @@ async function save() {
         await db.collection("keuangan").doc(`${user.uid}_${key()}`).set({
             atm: atm,
             cash: cash,
+            target: target,
             transaksi: data,
             lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -417,6 +474,15 @@ async function save() {
 function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
 
 function render() {
+  // Hitung progres tabungan 
+    let totalTabungan = data.filter(d => d.kategori === 'tabungan')
+                            .reduce((sum, item) => sum + item.nominal, 0);
+    
+    let persen = target > 0 ? Math.min((totalTabungan / target) * 100, 100) : 0;
+    
+    document.getElementById("barTarget").style.width = persen + "%";
+    document.getElementById("persenTarget").textContent = Math.round(persen) + "%";
+    document.getElementById("infoTarget").textContent = `Terkumpul: Rp ${f(totalTabungan)} / Target: Rp ${f(target)}`;
     data.sort((a, b) => new Date(a.tglAsli) - new Date(b.tglAsli));
     document.getElementById("atm").textContent = f(atm);
     document.getElementById("cash").textContent = f(cash);
@@ -428,30 +494,7 @@ function render() {
 <td>
     <div style="font-weight:bold">${d.ket}</div>
     <span class="kat-badge">
-        ${
-          d.kategori === 'umum' ? '💳' :
-          d.kategori === 'jajan' ? '☕' :
-          d.kategori === 'makanminum diluar' ? '🍽️' :
-          d.kategori === 'bahan makanan' ? '🥕' :
-          d.kategori === 'belanja bulanan' ? '🛒' :
-          d.kategori === 'token listrik' ? '⚡' :
-          d.kategori === 'wifi' ? '🛜' :
-          d.kategori === 'pulsa / kuota' ? '📶' :
-          d.kategori === 'belanja paket' ? '📦' :
-          d.kategori === 'kesehatan / obat' ? '💊' :
-          d.kategori === 'hadiah / donasi' ? '🎁' :
-          d.kategori === 'hobi / liburan' ? '✈️' :
-          d.kategori === 'transportasi' ? '🚗' :
-          d.kategori === 'angsuran rumah' ? '🏠' :
-          d.kategori === 'perbaikan rumah' ? '🛠️' :
-          d.kategori === 'angsuran motor' ? '🛵' :
-          d.kategori === 'perbaikan dan perawatan motor' ? '🛠️' :
-          d.kategori === 'bensin motor' ? '⛽' :
-          d.kategori === 'perbaikan dan perawatan inventaris' ? '🛠️' :
-          d.kategori === 'bensin inventaris' ? '⛽' :
-          d.kategori === 'tabungan' ? '💰' : '💳'
-        } 
-        ${d.kategori || 'umum'}
+        ${ikonKategori[d.kategori] || '💳'} ${d.kategori || 'umum'}
     </span>
 </td>
 <td>${d.metode.toUpperCase()}</td>
@@ -465,7 +508,31 @@ function render() {
         </tr>
     `).join("");
 }
+// Fungsi buat geser bulan otomatis
+function pindahBulan(arah) {
+    let m = parseInt(bulanEl.value) + arah;
+    let y = parseInt(tahunEl.value);
 
+    // Logika kalau balik dari Januari ke Desember tahun lalu
+    if (m < 1) { 
+        m = 12; 
+        y--; 
+    } 
+    // Logika kalau maju dari Desember ke Januari tahun depan
+    else if (m > 12) { 
+        m = 1; 
+        y++; 
+    }
+
+    // Update tampilan dropdown
+    bulanEl.value = m;
+    tahunEl.value = y;
+    
+    // Update periode data dan panggil load()
+    periode.bulan = m;
+    periode.tahun = y;
+    load();
+}
 // Event Handlers
 bulanEl.onchange = tahunEl.onchange = () => {
     periode.bulan = bulanEl.value;
@@ -721,6 +788,15 @@ fab.onclick = function(e) {
     // Kalau gak drag, jalankan openForm() manual
     openForm();
 };
+  // Fungsi buat input target tabungan
+function setTarget() {
+    let input = prompt("Masukkan target tabungan bulan ini (Rp):", target);
+    if (input !== null) {
+        target = parseInt(input) || 0;
+        render(); // Biar tampilan langsung update
+        save();   // Biar target tersimpan ke Firebase
+    }
+}
 </script>
 
 </body>
