@@ -265,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -301,8 +301,6 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 
 <div class="card">
   <div style="margin-bottom: 15px; display: flex; gap: 10px;">
-    <button id="btnModeEdit" onclick="toggleMode('edit')" style="width:auto; padding:8px 15px; font-size:12px;">EDIT</button>
-    <button id="btnModeHapus" onclick="toggleMode('hapus')" style="width:auto; padding:8px 15px; font-size:12px;">HAPUS</button>
   </div>
   <table>
 <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Metode</th><th>Nominal</th><th></th></tr></thead>
@@ -310,7 +308,12 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </table>
 </div>
 
-<button class="fab">+</button>
+<div id="fab-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 1001; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+    <button id="btnTambahFab" onclick="openForm()" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #28a745; color: white; border: none; font-size: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">+</button>
+    <button id="btnEditFab" onclick="toggleMode('edit')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #007bff; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">EDIT</button>
+    <button id="btnHapusFab" onclick="toggleMode('hapus')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #dc3545; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">HAPUS</button>
+    <button id="mainFab" class="fab" onclick="toggleFabMenu()" style="position: static; margin: 0;">MENU</button>
+</div>
 </div>
 
 <!-- ===== MODAL ===== -->
@@ -491,7 +494,7 @@ function render() {
     
     // 3. Gambar Tabel dengan fitur Drag & Drop
     document.getElementById("list").innerHTML = data.map((d, i) => `
-        <tr draggable="true" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})" style="cursor: move;">
+        <tr draggable="${modeEdit ? 'true' : 'false'}" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})" style="cursor: ${modeEdit ? 'move' : 'default'};">
             <td>${d.tgl}</td>
             <td>
                 <div style="font-weight:bold">${d.ket}</div>
@@ -592,6 +595,21 @@ let modeHapus = false;
 let editIndex = null; 
 
 // 2. Fungsi buat mati-nyalain mode
+// Fungsi buat buka-tutup menu M
+function toggleFabMenu() {
+    const btnT = document.getElementById("btnTambahFab");
+    const btnE = document.getElementById("btnEditFab");
+    const btnH = document.getElementById("btnHapusFab");
+    const isHidden = btnT.style.display === "none";
+
+    [btnT, btnE, btnH].forEach(btn => {
+        btn.style.display = isHidden ? "block" : "none";
+    });
+    
+    document.getElementById("mainFab").textContent = isHidden ? "X" : "M";
+}
+
+// Fungsi toggle mode (Edit/Hapus) yang sudah diupdate ke FAB
 function toggleMode(tipe) {
     if (tipe === 'edit') {
         modeEdit = !modeEdit;
@@ -601,24 +619,19 @@ function toggleMode(tipe) {
         modeEdit = false;
     }
 
-    const bE = document.getElementById("btnModeEdit");
-    const bH = document.getElementById("btnModeHapus");
+    const bE = document.getElementById("btnEditFab");
+    const bH = document.getElementById("btnHapusFab");
 
-    // Gaya tombol EDIT
-    bE.style.background = modeEdit ? "blue" : "transparent";
-    bE.style.color = modeEdit ? "white" : "var(--gold)";
-    bE.style.borderColor = modeEdit ? "blue" : "var(--gold)";
-    bE.textContent = modeEdit ? "SELESAI" : "EDIT";
+    // Gaya tombol EDIT di FAB
+    bE.style.background = modeEdit ? "#0056b3" : "#007bff"; // Gelap kalau aktif
+    bE.textContent = modeEdit ? "OK" : "EDIT";
 
-    // Gaya tombol HAPUS
-    bH.style.background = modeHapus ? "red" : "transparent";
-    bH.style.color = modeHapus ? "white" : "var(--gold)";
-    bH.style.borderColor = modeHapus ? "red" : "var(--gold)";
-    bH.textContent = modeHapus ? "SELESAI" : "HAPUS";
+    // Gaya tombol HAPUS di FAB
+    bH.style.background = modeHapus ? "#a71d2a" : "#dc3545"; // Gelap kalau aktif
+    bH.textContent = modeHapus ? "OK" : "HAPUS";
 
     render();
 }
-
 function bukaEdit(index) {
     const item = data[index];
     editIndex = index; 
@@ -769,15 +782,14 @@ window.addEventListener('touchend', (e) => {
     }
 });
 
-// Biar gak buka form pas abis geser
-fab.onclick = function(e) {
+// Biar menu gak kebuka/ketutup pas abis diseret (Drag)
+document.getElementById("mainFab").onclick = function(e) {
     if (isDragging) {
         e.preventDefault();
         e.stopImmediatePropagation();
         return false;
     }
-    // Kalau gak drag, jalankan openForm() manual
-    openForm();
+    toggleFabMenu();
 };
   // Fungsi buat input target tabungan
 function setTarget() {
@@ -819,6 +831,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
