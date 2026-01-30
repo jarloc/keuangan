@@ -265,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.5</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.6</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -321,29 +321,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
   <option value="masuk">Pemasukan</option>
   <option value="keluar">Pengeluaran</option>
 </select>
-<select id="kategori">
-  <option value="umum">💳 Umum</option>
-  <option value="jajan">☕ Jajan</option>
-  <option value="makan / minum diluar">🍽️ Makan / Minum diluar</option>
-  <option value="bahan makanan">🥕 Bahan makanan</option>
-  <option value="belanja bulanan">🛒 Belanja bulanan</option>
-  <option value="token listrik">⚡ Token listrik</option>
-  <option value="wifi">🛜 Wifi</option>
-  <option value="pulsa / kuota">📶 Pulsa / Kuota</option>
-  <option value="belanja paket">📦 Belanja paket</option>
-  <option value="kesehatan / obat">💊 Kesehatan / Obat</option>
-  <option value="hadiah / donasi">🎁 Hadiah / Donasi</option>
-  <option value="hobi / liburan">✈️ Hobi / Liburan</option>
-  <option value="transportasi">🚗 Transportasi</option>
-  <option value="angsuran rumah">🏠 Angsuran rumah</option>
-  <option value="perbaikan rumah">🛠️ Perbaikan rumah</option>
-  <option value="angsuran motor">🛵 Angsuran motor</option>  
-  <option value="perbaikan dan perawatan motor">🛠️ Perbaikan dan perawatan motor</option>
-  <option value="bensin motor">⛽ Bensin motor</option>
-  <option value="perbaikan dan perawatan inventaris">🛠️ Perbaikan dan perawatan inventaris</option>
-  <option value="bensin inventaris">⛽ Bensin inventaris</option>
-  <option value="tabungan">💰 Tabungan</option>
-</select>
+<select id="kategori"></select>
 
 <select id="metode">
   <option value="atm">ATM</option>
@@ -396,7 +374,7 @@ const ikonKategori = {
     "tabungan": "💰"
 };
 const bulanEl = document.getElementById("bulan"), tahunEl = document.getElementById("tahun");
-const bulanNama = ["JANUARI","FEBRUARI","MAARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
+const bulanNama = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
 
 // Setting Dropdown & Periode
 bulanNama.forEach((b, i) => bulanEl.innerHTML += `<option value="${i + 1}">${b}</option>`);
@@ -474,7 +452,7 @@ async function save() {
 function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
 
 function render() {
-  // Hitung progres tabungan 
+    data.sort((a, b) => new Date(a.tglAsli) - new Date(b.tglAsli));
     let totalTabungan = data.filter(d => d.kategori === 'tabungan')
                             .reduce((sum, item) => sum + item.nominal, 0);
     
@@ -483,7 +461,7 @@ function render() {
     document.getElementById("barTarget").style.width = persen + "%";
     document.getElementById("persenTarget").textContent = Math.round(persen) + "%";
     document.getElementById("infoTarget").textContent = `Terkumpul: Rp ${f(totalTabungan)} / Target: Rp ${f(target)}`;
-    data.sort((a, b) => new Date(a.tglAsli) - new Date(b.tglAsli));
+    
     document.getElementById("atm").textContent = f(atm);
     document.getElementById("cash").textContent = f(cash);
     document.getElementById("total").textContent = f(atm + cash);
@@ -491,13 +469,13 @@ function render() {
     document.getElementById("list").innerHTML = data.map((d, i) => `
         <tr>
             <td>${d.tgl}</td>
-<td>
-    <div style="font-weight:bold">${d.ket}</div>
-    <span class="kat-badge">
-        ${ikonKategori[d.kategori] || '💳'} ${d.kategori || 'umum'}
-    </span>
-</td>
-<td>${d.metode.toUpperCase()}</td>
+            <td>
+                <div style="font-weight:bold">${d.ket}</div>
+                <span class="kat-badge">
+                    ${ikonKategori[d.kategori] || '💳'} ${d.kategori || 'umum'}
+                </span>
+            </td>
+            <td>${d.metode.toUpperCase()}</td>
             <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">
                 ${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}
             </td>
@@ -532,6 +510,12 @@ function pindahBulan(arah) {
     periode.bulan = m;
     periode.tahun = y;
     load();
+}
+const kategoriEl = document.getElementById("kategori");
+if (kategoriEl) {
+    kategoriEl.innerHTML = Object.keys(ikonKategori).map(k => 
+        `<option value="${k}">${ikonKategori[k]} ${k.charAt(0).toUpperCase() + k.slice(1)}</option>`
+    ).join("");
 }
 // Event Handlers
 bulanEl.onchange = tahunEl.onchange = () => {
@@ -623,7 +607,8 @@ function bukaEdit(index) {
     document.getElementById("ket").value = item.ket;
     document.getElementById("nominal").value = item.nominal;
   
-    document.getElementById("kategori").value = item.kategori || "umum";
+    const katEl = document.getElementById("kategori");
+    if (katEl) katEl.value = item.kategori || "umum";
     
     document.getElementById("modal").style.display = "flex";
 }
@@ -801,6 +786,7 @@ function setTarget() {
 
 </body>
 </html>
+
 
 
 
