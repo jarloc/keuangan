@@ -261,7 +261,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.8</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.9</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -305,10 +305,10 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </div>
 
 <div id="fab-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 1001; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+    <button id="mainFab" class="fab" onclick="toggleFabMenu()" style="position: static; margin: 0;">MENU</button>
     <button id="btnTambahFab" onclick="openForm()" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #28a745; color: white; border: none; font-size: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">+</button>
     <button id="btnEditFab" onclick="toggleMode('edit')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #007bff; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">EDIT</button>
     <button id="btnHapusFab" onclick="toggleMode('hapus')" style="display: none; width: 45px; height: 45px; border-radius: 50%; background: #dc3545; color: white; border: none; font-size: 10px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">HAPUS</button>
-    <button id="mainFab" class="fab" onclick="toggleFabMenu()" style="position: static; margin: 0;">MENU</button>
 </div>
 </div>
 
@@ -827,6 +827,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
