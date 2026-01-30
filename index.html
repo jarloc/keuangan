@@ -265,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.8.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -396,32 +396,34 @@ async function load() {
     showLoading("Sedang sinkronisasi data...");
 
     try {
-        // 1. Ambil data bulan sekarang
         const docRef = db.collection("keuangan").doc(`${user.uid}_${key()}`);
         const doc = await docRef.get();
 
-        // 2. LOGIKA AUTO-PULL: Cari tau bulan lalu itu bulan apa
-        let bulanLalu = periode.bulan - 1;
-        let tahunLalu = periode.tahun;
-        if (bulanLalu < 1) { 
-            bulanLalu = 12; 
-            tahunLalu--; 
-        }
-        
-        // Ambil data bulan lalu dari database
-        const docLaluRef = db.collection("keuangan").doc(`${user.uid}_${tahunLalu}_${bulanLalu}`);
-        const docLalu = await docLaluRef.get();
-        
+        // --- LOGIKA KHUSUS TABUNGAN (AUTO-SCAN) ---
         let tabunganBulanLalu = 0;
-        if (docLalu.exists) {
-            const dataLalu = docLalu.data().transaksi || [];
-            // Hitung total tabungan yang terkumpul sampai bulan kemarin
-            tabunganBulanLalu = dataLalu.filter(d => d.kategori === 'tabungan')
-                                        .reduce((sum, item) => sum + item.nominal, 0);
-        }
+        let cekBulan = periode.bulan - 1;
+        let cekTahun = periode.tahun;
+        let ketemu = false;
+        let batasCek = 0; 
 
-        // Simpan angka tabungan bulan lalu ke 'kantong' sementara (variabel global)
+        while (!ketemu && batasCek < 12) {
+            if (cekBulan < 1) { cekBulan = 12; cekTahun--; }
+            
+            const docLaluRef = db.collection("keuangan").doc(`${user.uid}_${cekTahun}_${cekBulan}`);
+            const docLalu = await docLaluRef.get();
+
+            if (docLalu.exists) {
+                const dataLalu = docLalu.data().transaksi || [];
+                // Cuma ambil angka tabungan
+                tabunganBulanLalu = dataLalu.filter(d => d.kategori === 'tabungan')
+                                            .reduce((sum, item) => sum + item.nominal, 0);
+                ketemu = true; 
+            }
+            cekBulan--;
+            batasCek++;
+        }
         window.tabunganLalu = tabunganBulanLalu;
+        // ------------------------------------------
 
         if (doc.exists) {
             const cloudData = doc.data();
@@ -430,6 +432,7 @@ async function load() {
             target = cloudData.target || 0;
             data = cloudData.transaksi || [];
         } else {
+            // Saldo ATM & Cash tetep 0 kalau bulan baru (sesuai mau lo)
             atm = 0; cash = 0; data = [];
         }
 
@@ -816,6 +819,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
