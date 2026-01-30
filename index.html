@@ -265,7 +265,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.8</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.9</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -390,15 +390,39 @@ function key() { return `${periode.tahun}_${periode.bulan}`; }
 
 // Fungsi Ambil Data dari Firebase (Cloud)
 async function load() {
+async function load() {
     const user = auth.currentUser;
     if (!user) return;
 
-    // 1. Panggil Satpam: Kunci layar total biar gak ada salah input
-    showLoading("Sedang sinkronisasi data dari server...");
+    showLoading("Sedang sinkronisasi data...");
 
     try {
+        // 1. Ambil data bulan sekarang
         const docRef = db.collection("keuangan").doc(`${user.uid}_${key()}`);
         const doc = await docRef.get();
+
+        // 2. LOGIKA AUTO-PULL: Cari tau bulan lalu itu bulan apa
+        let bulanLalu = periode.bulan - 1;
+        let tahunLalu = periode.tahun;
+        if (bulanLalu < 1) { 
+            bulanLalu = 12; 
+            tahunLalu--; 
+        }
+        
+        // Ambil data bulan lalu dari database
+        const docLaluRef = db.collection("keuangan").doc(`${user.uid}_${tahunLalu}_${bulanLalu}`);
+        const docLalu = await docLaluRef.get();
+        
+        let tabunganBulanLalu = 0;
+        if (docLalu.exists) {
+            const dataLalu = docLalu.data().transaksi || [];
+            // Hitung total tabungan yang terkumpul sampai bulan kemarin
+            tabunganBulanLalu = dataLalu.filter(d => d.kategori === 'tabungan')
+                                        .reduce((sum, item) => sum + item.nominal, 0);
+        }
+
+        // Simpan angka tabungan bulan lalu ke 'kantong' sementara (variabel global)
+        window.tabunganLalu = tabunganBulanLalu;
 
         if (doc.exists) {
             const cloudData = doc.data();
@@ -407,14 +431,10 @@ async function load() {
             target = cloudData.target || 0;
             data = cloudData.transaksi || [];
         } else {
-            // Data bulan baru masih kosong
             atm = 0; cash = 0; data = [];
         }
 
-        // 2. Render data ke tabel
         render();
-
-        // 3. PENTING: Pindahkan layar ke Menu Utama HANYA SETELAH data beres
         document.getElementById("welcome").style.display = "none";
         document.getElementById("main").style.display = "block";
 
@@ -422,7 +442,6 @@ async function load() {
         console.error("Error loading:", e);
         alert("Gagal ambil data: " + e.message);
     } finally {
-        // 4. Buka kunci layar setelah semua proses selesai
         hideLoading();
     }
 }
@@ -453,9 +472,13 @@ async function save() {
 function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
 
 function render() {
+    function render() {
     data.sort((a, b) => new Date(a.tglAsli) - new Date(b.tglAsli));
-    let totalTabungan = data.filter(d => d.kategori === 'tabungan')
-                            .reduce((sum, item) => sum + item.nominal, 0);
+    
+    let tabunganBulanIni = data.filter(d => d.kategori === 'tabungan')
+                               .reduce((sum, item) => sum + item.nominal, 0);
+    
+    let totalTabungan = (window.tabunganLalu || 0) + tabunganBulanIni;
     
     let persen = target > 0 ? Math.min((totalTabungan / target) * 100, 100) : 0;
     
@@ -787,6 +810,7 @@ function setTarget() {
 
 </body>
 </html>
+
 
 
 
