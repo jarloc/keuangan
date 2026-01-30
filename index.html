@@ -246,7 +246,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.7.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -427,8 +427,34 @@ function render() {
             <td>${d.tgl}</td>
 <td>
     <div style="font-weight:bold">${d.ket}</div>
-    <span class="kat-badge">#${d.kategori || 'umum'}</span>
-</td>            <td>${d.metode.toUpperCase()}</td>
+    <span class="kat-badge">
+        ${
+          d.kategori === 'umum' ? '💳' :
+          d.kategori === 'jajan' ? '☕' :
+          d.kategori === 'makanminum diluar' ? '🍽️' :
+          d.kategori === 'bahan makanan' ? '🥕' :
+          d.kategori === 'belanja bulanan' ? '🛒' :
+          d.kategori === 'token listrik' ? '⚡' :
+          d.kategori === 'wifi' ? '🛜' :
+          d.kategori === 'pulsa / kuota' ? '📶' :
+          d.kategori === 'belanja paket' ? '📦' :
+          d.kategori === 'kesehatan / obat' ? '💊' :
+          d.kategori === 'hadiah / donasi' ? '🎁' :
+          d.kategori === 'hobi / liburan' ? '✈️' :
+          d.kategori === 'transportasi' ? '🚗' :
+          d.kategori === 'angsuran rumah' ? '🏠' :
+          d.kategori === 'perbaikan rumah' ? '🛠️' :
+          d.kategori === 'angsuran motor' ? '🛵' :
+          d.kategori === 'perbaikan dan perawatan motor' ? '🛠️' :
+          d.kategori === 'bensin motor' ? '⛽' :
+          d.kategori === 'perbaikan dan perawatan inventaris' ? '🛠️' :
+          d.kategori === 'bensin inventaris' ? '⛽' :
+          d.kategori === 'tabungan' ? '💰' : '💳'
+        } 
+        ${d.kategori || 'umum'}
+    </span>
+</td>
+<td>${d.metode.toUpperCase()}</td>
             <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">
                 ${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}
             </td>
@@ -699,6 +725,7 @@ fab.onclick = function(e) {
 
 </body>
 </html>
+
 
 
 
