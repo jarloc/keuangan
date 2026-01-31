@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KEUANGAN PRIBADI V2.0.2</title>
+<title>KEUANGAN PRIBADI V2.0.3</title>
 
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -182,7 +182,7 @@ header {
     transform: scale(0.9);
 }
 .fab-sub {
-    display: none; /* Biar awalnya ngumpet */
+    display: none;
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -190,7 +190,8 @@ header {
     border: none;
     font-size: 10px;
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);    
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease; /* Tambahan biar smooth saat ditekan */
 }
 .joget {
     animation: floating 3s ease-in-out infinite !important;
@@ -278,7 +279,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V1.9.6</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V2.0.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -614,28 +615,29 @@ function toggleFabMenu() {
     const btnT = document.getElementById("btnTambahFab");
     const btnE = document.getElementById("btnEditFab");
     const btnH = document.getElementById("btnHapusFab");
-    const isHidden = btnT.style.display === "none";
+    
+    // Perbaikan klik pertama: Cek computed style jika inline style masih kosong
+    const currentDisplay = window.getComputedStyle(btnT).display;
+    const isHidden = currentDisplay === "none";
 
     const anakAnak = [btnT, btnE, btnH];
     
-    anakAnak.forEach(btn => {
-        if (isHidden) {
+    if (isHidden) {
+        // Buka Menu
+        anakAnak.forEach(btn => {
             btn.style.display = "block";
-            // Jeda 10ms biar browser 'napas' dulu sebelum disuruh joget
-            setTimeout(() => {
-                btn.classList.add('joget');
-            }, 10);
-        } else {
+            btn.classList.add('joget');
+        });
+        fab.classList.remove('joget'); // X DIAM
+        fab.textContent = "X";
+        fab.style.marginBottom = "0"; // Reset margin akibat animasi floating
+    } else {
+        // Tutup Menu
+        anakAnak.forEach(btn => {
             btn.style.display = "none";
             btn.classList.remove('joget');
-        }
-    });
-
-    if (isHidden) {
-        fab.classList.remove('joget'); // Si MENU (X) anteng pas kebuka
-        fab.textContent = "X";
-    } else {
-        fab.classList.add('joget'); // Si MENU joget lagi pas ketutup
+        });
+        fab.classList.add('joget'); // MENU JOGET
         fab.textContent = "MENU";
     }
 }
@@ -792,41 +794,35 @@ fab.addEventListener('touchstart', () => {
 // PERBAIKAN MOUSEUP
 window.addEventListener('mouseup', () => {
     window.removeEventListener('mousemove', moveFab);
-    if (isDragging) {
-        fab.classList.add('fab-pop');
-        if (fab.textContent === "MENU") {
-            fab.style.animation = 'none';
-            void fab.offsetWidth;
-            fab.style.animation = 'floating 3s ease-in-out infinite';
-        } else {
-            fab.style.animation = 'none';
-            fab.style.marginBottom = '0';
-        }
-        setTimeout(() => {
-            fab.classList.remove('fab-pop');
-            isDragging = false;
-        }, 300);
+ if (isDragging) {
+    fab.classList.add('fab-pop');
+    if (fab.textContent === "MENU") {
+        fab.classList.add('joget'); // Paksa joget lagi setelah dilepas
+    } else {
+        fab.classList.remove('joget'); // Tetap diam kalau posisinya sedang jadi X
     }
+    setTimeout(() => {
+        fab.classList.remove('fab-pop');
+        isDragging = false;
+    }, 300);
+}
 });
 
 // PERBAIKAN TOUCHEND
 window.addEventListener('touchend', () => {
     window.removeEventListener('touchmove', moveFab);
-    if (isDragging) {
-        fab.classList.add('fab-pop');
-        if (fab.textContent === "MENU") {
-            fab.style.animation = 'none';
-            void fab.offsetWidth;
-            fab.style.animation = 'floating 3s ease-in-out infinite';
-        } else {
-            fab.style.animation = 'none';
-            fab.style.marginBottom = '0';
-        }
-        setTimeout(() => {
-            fab.classList.remove('fab-pop');
-            isDragging = false;
-        }, 300);
+if (isDragging) {
+    fab.classList.add('fab-pop');
+    if (fab.textContent === "MENU") {
+        fab.classList.add('joget'); // Paksa joget lagi setelah dilepas
+    } else {
+        fab.classList.remove('joget'); // Tetap diam kalau posisinya sedang jadi X
     }
+    setTimeout(() => {
+        fab.classList.remove('fab-pop');
+        isDragging = false;
+    }, 300);
+}
 });
 
 // Biar menu gak kebuka/ketutup pas abis diseret (Drag)
@@ -877,6 +873,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
