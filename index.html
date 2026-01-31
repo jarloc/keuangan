@@ -71,7 +71,7 @@ td:nth-child(2), th:nth-child(2) {
   word-break: break-word;
   min-width: 100px;
 }
-  .kat-badge { 
+.kat-badge { 
     font-size: 9px; 
     color: #aaa; 
     display: block; 
@@ -124,7 +124,6 @@ header {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-
 .box {
     padding: 10px;
     border: 1px solid #333;
@@ -147,17 +146,13 @@ header {
     cursor: move;
     touch-action: none;
 }
-
-/* KELAS JOGET DENGAN KASTA TINGGI */
 .joget {
     animation: floating 3s ease-in-out infinite !important;
 }
-
 @keyframes floating {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
 }
-
 .fab:active { transform: scale(0.9); }
 .fab-sub {
     display: none;
@@ -174,7 +169,6 @@ header {
 .btn-biru { background: #007bff; }
 .btn-merah { background: #dc3545; }
 .fab-pop { animation: pop 0.3s ease-out; }
-
 @keyframes pop {
     0% { transform: scale(0.9); }
     50% { transform: scale(1.2); }
@@ -190,7 +184,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
   #welcome input, #welcome button { width: 85%; }
 }
 .header-controls { display: flex; gap: 10px; justify-content: center; padding: 0 20px; }
-.nav-btn { background: #111; color: var(--gold); border: 1px solid #444; padding: 5px 15px; border-radius: 8px; font-weight: bold; }
+.nav-btn { background: #111; color: var(--gold); border: 1px solid #444; padding: 5px 15px; border-radius: 8px; font-weight: bold; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -228,10 +222,10 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
       <span>🎯 TARGET TABUNGAN</span>
       <span id="persenTarget" style="color: var(--gold); font-weight: bold;">0%</span>
     </div>
-    <div style="width: 100%; background: #222; height: 10px; border-radius: 5px; overflow: hidden;">
-      <div id="barTarget" style="width: 0%; height: 100%; background: var(--gold); transition: 1s ease;"></div>
+    <div style="width: 100%; background: #222; height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #333;">
+      <div id="barTarget" style="width: 0%; height: 100%; background: linear-gradient(90deg, #b8860b, var(--gold)); transition: 1s ease;"></div>
     </div>
-    <div id="infoTarget" onclick="setTarget()" style="font-size: 10px; color: #aaa; margin-top: 8px; cursor: pointer;">Klik untuk atur target...</div>
+    <div id="infoTarget" onclick="setTarget()" style="font-size: 10px; color: #aaa; margin-top: 8px; cursor: pointer;">Klik di sini untuk atur target...</div>
   </div>
   <div class="box">TOTAL<br><strong id="total">0</strong></div>
 </div>
@@ -265,7 +259,6 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </div>
 
 <script>
-// SEMUA LOGIKA FIREBASE & CRUD TETAP SAMA (TIDAK ADA PERUBAHAN)
 function showLoading(pesan = "Sedang memproses...") {
     document.getElementById("loading-msg").textContent = pesan;
     document.getElementById("loading-overlay").style.display = "flex";
@@ -290,10 +283,28 @@ function key() { return `${periode.tahun}_${periode.bulan}`; }
 async function load() {
     const user = auth.currentUser;
     if (!user) return;
-    showLoading();
+    showLoading("Sedang sinkronisasi data...");
     try {
         const docRef = db.collection("keuangan").doc(`${user.uid}_${key()}`);
         const doc = await docRef.get();
+
+        let tabunganBulanLalu = 0;
+        let cekBulan = periode.bulan - 1;
+        let cekTahun = periode.tahun;
+        let ketemu = false; let batasCek = 0;
+        while (!ketemu && batasCek < 12) {
+            if (cekBulan < 1) { cekBulan = 12; cekTahun--; }
+            const docLaluRef = db.collection("keuangan").doc(`${user.uid}_${cekTahun}_${cekBulan}`);
+            const docLalu = await docLaluRef.get();
+            if (docLalu.exists) {
+                const dataLalu = docLalu.data().transaksi || [];
+                tabunganBulanLalu = dataLalu.filter(d => d.kategori === 'tabungan').reduce((sum, item) => sum + item.nominal, 0);
+                ketemu = true;
+            }
+            cekBulan--; batasCek++;
+        }
+        window.tabunganLalu = tabunganBulanLalu;
+
         if (doc.exists) {
             const cloudData = doc.data();
             atm = cloudData.atm || 0; cash = cloudData.cash || 0;
@@ -322,18 +333,19 @@ function render() {
     let persen = target > 0 ? Math.min((totalTabungan / target) * 100, 100) : 0;
     document.getElementById("barTarget").style.width = persen + "%";
     document.getElementById("persenTarget").textContent = Math.round(persen) + "%";
+    document.getElementById("infoTarget").textContent = `Terkumpul: Rp ${f(totalTabungan)} / Target: Rp ${f(target)}`;
     document.getElementById("atm").textContent = f(atm);
     document.getElementById("cash").textContent = f(cash);
     document.getElementById("total").textContent = f(atm + cash);
     document.getElementById("list").innerHTML = data.map((d, i) => `
-        <tr draggable="${modeEdit ? 'true' : 'false'}" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})">
+        <tr draggable="${modeEdit ? 'true' : 'false'}" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})" style="cursor: ${modeEdit ? 'move' : 'default'};">
             <td>${d.tgl}</td>
             <td><div style="font-weight:bold">${d.ket}</div><span class="kat-badge">${ikonKategori[d.kategori] || '💳'} ${d.kategori}</span></td>
             <td>${d.metode.toUpperCase()}</td>
             <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}</td>
             <td>
-                ${modeHapus ? `<button onclick="hapusData(${i})">X</button>` : ''}
-                ${modeEdit ? `<button onclick="bukaEdit(${i})">Edit</button>` : ''}
+                ${modeHapus ? `<button style="padding:5px 10px; background:red; color:white; border:none; border-radius:4px;" onclick="hapusData(${i})">X</button>` : ''}
+                ${modeEdit ? `<button style="padding:5px 10px; background:blue; color:white; border:none; border-radius:4px;" onclick="bukaEdit(${i})">Edit</button>` : ''}
             </td>
         </tr>
     `).join("");
@@ -349,7 +361,10 @@ function pindahBulan(arah) {
 }
 
 const kategoriEl = document.getElementById("kategori");
-kategoriEl.innerHTML = Object.keys(ikonKategori).map(k => `<option value="${k}">${ikonKategori[k]} ${k}</option>`).join("");
+kategoriEl.innerHTML = Object.keys(ikonKategori).map(k => `<option value="${k}">${ikonKategori[k]} ${k.charAt(0).toUpperCase() + k.slice(1)}</option>`).join("");
+
+function openForm() { document.getElementById("modal").style.display = "flex"; document.getElementById("tglInput").valueAsDate = new Date(); editIndex = null; }
+function closeForm() { document.getElementById("modal").style.display = "none"; }
 
 async function simpan() {
     const tglPilihan = document.getElementById("tglInput").value;
@@ -376,6 +391,18 @@ async function simpan() {
     } catch (e) { alert(e.message); } finally { hideLoading(); }
 }
 
+async function hapusData(index) {
+    if (!confirm("Yakin hapus?")) return;
+    showLoading();
+    try {
+        const item = data[index];
+        if (item.jenis === "masuk") { item.metode === "atm" ? atm -= item.nominal : cash -= item.nominal; }
+        else { item.metode === "atm" ? atm += item.nominal : cash += item.nominal; }
+        data.splice(index, 1);
+        await save(); render();
+    } catch (e) { alert(e.message); } finally { hideLoading(); }
+}
+
 function login() {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
@@ -386,7 +413,7 @@ function login() {
 auth.onAuthStateChanged(user => { if (user) load(); else { document.getElementById("welcome").style.display = "flex"; document.getElementById("main").style.display = "none"; } });
 
 // ==========================================================
-// KUNCI PERBAIKAN: LOGIKA FAB DRAGGING & JOGET (ANT-DONGO)
+// KONTROL FAB DRAG & JOGET
 // ==========================================================
 const mainFab = document.getElementById('mainFab');
 const container = document.getElementById('fab-container');
@@ -395,25 +422,16 @@ let modeEdit = false; let modeHapus = false; let editIndex = null;
 
 function moveFab(e) {
     isDragging = true;
-    mainFab.style.animation = 'none'; // Matiin goyang pas ditarik biar gak pusing
-    
+    mainFab.style.animation = 'none';
     let x = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
     let y = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
-
     container.style.left = (x - 30) + 'px';
     container.style.top = (y - 30) + 'px';
-    container.style.right = 'auto';
-    container.style.bottom = 'auto';
+    container.style.right = 'auto'; container.style.bottom = 'auto';
 }
 
-mainFab.addEventListener('mousedown', () => { 
-    isDragging = false; 
-    window.addEventListener('mousemove', moveFab); 
-});
-mainFab.addEventListener('touchstart', () => { 
-    isDragging = false; 
-    window.addEventListener('touchmove', moveFab, { passive: false }); 
-});
+mainFab.addEventListener('mousedown', () => { isDragging = false; window.addEventListener('mousemove', moveFab); });
+mainFab.addEventListener('touchstart', () => { isDragging = false; window.addEventListener('touchmove', moveFab, { passive: false }); });
 
 window.addEventListener('mouseup', endDrag);
 window.addEventListener('touchend', endDrag);
@@ -421,49 +439,32 @@ window.addEventListener('touchend', endDrag);
 function endDrag() {
     window.removeEventListener('mousemove', moveFab);
     window.removeEventListener('touchmove', moveFab);
-    
     if (isDragging) {
         mainFab.classList.add('fab-pop');
-        
-        // Reset paksa style sisa drag
         mainFab.style.animation = ""; 
-        
         if (mainFab.textContent === "MENU") {
             mainFab.classList.remove('joget');
-            void mainFab.offsetWidth; // Paksa browser refresh
+            void mainFab.offsetWidth;
             mainFab.classList.add('joget');
         }
-        
-        setTimeout(() => { 
-            mainFab.classList.remove('fab-pop'); 
-            isDragging = false; 
-        }, 300);
+        setTimeout(() => { mainFab.classList.remove('fab-pop'); isDragging = false; }, 300);
     }
 }
 
-mainFab.onclick = function() {
-    if (isDragging) return;
-    toggleFabMenu();
-};
+mainFab.onclick = function() { if (!isDragging) toggleFabMenu(); };
 
 function toggleFabMenu() {
     const btnT = document.getElementById("btnTambahFab");
     const btnE = document.getElementById("btnEditFab");
     const btnH = document.getElementById("btnHapusFab");
     const isHidden = window.getComputedStyle(btnT).display === "none";
-    const anakAnak = [btnT, btnE, btnH];
-
     if (isHidden) {
-        anakAnak.forEach(btn => { btn.style.display = "block"; btn.classList.add('joget'); });
-        mainFab.classList.remove('joget');
-        mainFab.textContent = "X";
+        [btnT, btnE, btnH].forEach(btn => { btn.style.display = "block"; btn.classList.add('joget'); });
+        mainFab.classList.remove('joget'); mainFab.textContent = "X";
     } else {
-        anakAnak.forEach(btn => { btn.style.display = "none"; btn.classList.remove('joget'); });
+        [btnT, btnE, btnH].forEach(btn => { btn.style.display = "none"; btn.classList.remove('joget'); });
         mainFab.textContent = "MENU";
-        // Reset animasi MENU saat tutup
-        mainFab.style.animation = "";
-        void mainFab.offsetWidth;
-        mainFab.classList.add('joget');
+        mainFab.style.animation = ""; void mainFab.offsetWidth; mainFab.classList.add('joget');
     }
 }
 
@@ -475,11 +476,30 @@ function toggleMode(tipe) {
     render();
 }
 
+function bukaEdit(index) {
+    const item = data[index]; editIndex = index;
+    document.getElementById("tglInput").value = item.tglAsli;
+    document.getElementById("jenis").value = item.jenis;
+    document.getElementById("metode").value = item.metode;
+    document.getElementById("ket").value = item.ket;
+    document.getElementById("nominal").value = item.nominal;
+    document.getElementById("kategori").value = item.kategori || "umum";
+    document.getElementById("modal").style.display = "flex";
+}
+
 function setTarget() {
-    let input = prompt("Masukkan target tabungan (Rp):", target);
+    let input = prompt("Target (Rp):", target);
     if (input !== null) { target = parseInt(input) || 0; render(); save(); }
 }
-// ==========================================================
+
+let indexSumber;
+function startDrag(i) { indexSumber = i; }
+function allowDrop(e) { e.preventDefault(); }
+async function dropData(indexTujuan) {
+    const dS = data[indexSumber]; data.splice(indexSumber, 1); data.splice(indexTujuan, 0, dS);
+    render(); showLoading("Menyimpan urutan...");
+    try { await save(); } catch (e) { alert(e.message); } finally { hideLoading(); }
+}
 </script>
 </body>
 </html>
