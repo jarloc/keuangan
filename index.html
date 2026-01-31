@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KEUANGAN PRIBADI V2.0.3</title>
+<title>KEUANGAN PRIBADI V2.0.4</title>
 
 <!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -279,7 +279,7 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V2.0.3</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V2.0.4</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
@@ -794,35 +794,37 @@ fab.addEventListener('touchstart', () => {
 // PERBAIKAN MOUSEUP
 window.addEventListener('mouseup', () => {
     window.removeEventListener('mousemove', moveFab);
- if (isDragging) {
-    fab.classList.add('fab-pop');
-    if (fab.textContent === "MENU") {
-        fab.classList.add('joget'); // Paksa joget lagi setelah dilepas
-    } else {
-        fab.classList.remove('joget'); // Tetap diam kalau posisinya sedang jadi X
-    }
-    setTimeout(() => {
-        fab.classList.remove('fab-pop');
-        isDragging = false;
-    }, 300);
-}
+    if (isDragging) {
+        fab.classList.add('fab-pop');
+        fab.style.animation = '';
+        if (fab.textContent === "MENU") {
+            fab.classList.add('joget'); // Paksa joget lagi setelah dilepas
+        } else {
+            fab.classList.remove('joget'); // Tetap diam kalau posisinya sedang jadi X
+        }
+        setTimeout(() => {
+            fab.classList.remove('fab-pop');
+            isDragging = false;
+        }, 300);
+   }
 });
 
 // PERBAIKAN TOUCHEND
 window.addEventListener('touchend', () => {
     window.removeEventListener('touchmove', moveFab);
-if (isDragging) {
-    fab.classList.add('fab-pop');
-    if (fab.textContent === "MENU") {
-        fab.classList.add('joget'); // Paksa joget lagi setelah dilepas
-    } else {
-        fab.classList.remove('joget'); // Tetap diam kalau posisinya sedang jadi X
-    }
-    setTimeout(() => {
-        fab.classList.remove('fab-pop');
-        isDragging = false;
-    }, 300);
-}
+    if (isDragging) {
+        fab.classList.add('fab-pop');
+        fab.style.animation = '';
+        if (fab.textContent === "MENU") {
+            fab.classList.add('joget'); // Paksa joget lagi setelah dilepas
+        } else {
+            fab.classList.remove('joget'); // Tetap diam kalau posisinya sedang jadi X
+        }
+        setTimeout(() => {
+            fab.classList.remove('fab-pop');
+            isDragging = false;
+        }, 300);
+   }
 });
 
 // Biar menu gak kebuka/ketutup pas abis diseret (Drag)
@@ -873,6 +875,7 @@ async function dropData(indexTujuan) {
 
 </body>
 </html>
+
 
 
 
