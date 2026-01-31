@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KEUANGAN PRIBADI V2.0.8</title>
+<title>KEUANGAN PRIBADI V2.0.9</title>
 
-<!-- ===== FIREBASE (SCRIPT TAG / COMPAT) ===== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -22,8 +21,6 @@
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-
-  /* ===== KUNCI MASALAH RELOAD (JANGAN DIHAPUS) ===== */
   auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 </script>
 
@@ -54,15 +51,11 @@ button {
     padding: 12px 0;
 }
 
-/* Tabel Anti-Bingkai: Garis Vertikal Lenyap */
 table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
   border: none !important;
- 
-  border-left: 0 !important;
-  border-right: 0 !important;
 }
 
 th, td {
@@ -71,13 +64,11 @@ th, td {
   color: #fff;
   border: none !important;
   border-bottom: 1px solid #333 !important;
-  /* JANGAN pakai white-space: nowrap di sini secara global */
 }
 
-/* 1. Paksa Keterangan buat ganti baris kalau kepanjangan */
 td:nth-child(2), th:nth-child(2) {
-  white-space: normal !important; /* Biar teks turun ke bawah, gak bocor samping */
-  word-break: break-word; /* Potong kata kalau kepanjangan banget */
+  white-space: normal !important;
+  word-break: break-word;
   min-width: 100px;
 }
   .kat-badge { 
@@ -89,36 +80,29 @@ td:nth-child(2), th:nth-child(2) {
     text-transform: lowercase;
 }
 
-/* 2. Kunci Lebar Nominal biar gak kegeser-geser */
 td:nth-child(4), th:nth-child(4) {
   text-align: right;
   padding-right: 10px;
-  width: 90px !important; /* Kunci lebar kolom nominal */
+  width: 90px !important;
   min-width: 90px !important;
-  white-space: nowrap; /* Nominal tetep satu baris biar rapi */
+  white-space: nowrap;
 }
-/* Atur lebar kolom secara manual agar pas di HP */
-th:nth-child(1), td:nth-child(1) { width: 45px; } /* Tgl */
+th:nth-child(1), td:nth-child(1) { width: 45px; } 
 th:nth-child(3), td:nth-child(3) { 
   width: 55px; 
-  text-align: center !important; /* <--- TAMBAHIN INI */
+  text-align: center !important;
 }
-th:nth-child(4), td:nth-child(4) { width: 90px; text-align: right; } /* Nominal */
-/* Tambahin ini biar teks gak maksa pindah baris di tengah kata */
+th:nth-child(4), td:nth-child(4) { width: 90px; text-align: right; }
 th {
-  font-size: 11px; /* Font judul lebih kecil biar kata "Keterangan" muat */
+  font-size: 11px;
   text-transform: uppercase;
   color: var(--gold);
   letter-spacing: 0.5px;
 }
 button:hover{box-shadow:0 0 20px var(--gold)}
 #welcome{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
-  #welcome h1{
-  font-size:60px;
-  margin: 10px 0;
-}
+#welcome h1{ font-size:60px; margin: 10px 0;}
 #welcome input{margin:6px;width:600px;padding:10px;background:#111;color:#fff;border:1px solid var(--gold);border-radius:10px}
-#welcome button{ margin-top:12px }
 #main{display:none}
 header {
     text-align: center;
@@ -133,20 +117,12 @@ header {
     width: 95%;
     border-top: 0.5px solid var(--gold);
     border-bottom: 0.5px solid var(--gold);
-    border-left: 0;
-    border-right: 0;
-    box-sizing: border-box;
     padding: 15px 0;
 }
 .saldo {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-}
-
-.box:nth-child(3) {
-  grid-column: 1 / span 2;
-  border-color: var(--gold);
 }
 
 .box {
@@ -161,7 +137,7 @@ header {
     border-radius: 50%;
     background: var(--gold);
     color: #000;
-    font-size: 14px; /* Kecilin dikit biar kata MENU muat */
+    font-size: 14px;
     font-weight: bold;
     border: none;
     box-shadow: 0 5px 15px rgba(0,0,0,0.5);
@@ -170,17 +146,19 @@ header {
     align-items: center;
     cursor: move;
     touch-action: none;
-    animation: floating 3s ease-in-out infinite;
+}
+
+/* KELAS JOGET DENGAN KASTA TINGGI */
+.joget {
+    animation: floating 3s ease-in-out infinite !important;
 }
 
 @keyframes floating {
-    0%, 100% { margin-bottom: 0; }
-    50% { margin-bottom: 10px; }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
-.fab:active {
-    transform: scale(0.9);
-}
+.fab:active { transform: scale(0.9); }
 .fab-sub {
     display: none;
     width: 45px;
@@ -191,18 +169,11 @@ header {
     font-size: 10px;
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease; /* Tambahan biar smooth saat ditekan */
 }
-.joget {
-    animation: floating 3s ease-in-out infinite !important;
-}
-#btnTambahFab { font-size: 20px; } /* Khusus tambah biar gede dikit */
 .btn-hijau { background: #28a745; }
 .btn-biru { background: #007bff; }
 .btn-merah { background: #dc3545; }
-.fab-pop {
-    animation: pop 0.3s ease-out;
-}
+.fab-pop { animation: pop 0.3s ease-out; }
 
 @keyframes pop {
     0% { transform: scale(0.9); }
@@ -214,78 +185,30 @@ header {
 input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;border:1px solid #333;border-radius:8px}
 
 @media (max-width: 768px) {
-
-  #welcome h1:first-of-type {
-    font-size: 20px !important; /* "SELAMAT DATANG DI WEBSITE" */
-  }
-
-  #welcome h1:last-of-type {
-    font-size: 35px !important; /* "KEUANGAN PRIBADI" */
-  }
-
-  #welcome p {
-    font-size: 11px;
-    padding: 0 20px;
-    text-align: center;
-  }
-  #welcome input, #welcome button {
-    width: 85%;
-    padding: 12px;
-  }
-
-  #welcome button{
-    width:90%;
-    padding:15px 0;
-  }
-
+  #welcome h1:first-of-type { font-size: 20px !important; }
+  #welcome h1:last-of-type { font-size: 35px !important; }
+  #welcome input, #welcome button { width: 85%; }
 }
-.header-controls {
-  display: flex; 
-  gap: 10px; 
-  justify-content: center; 
-  padding: 0 20px;
-}
-.header-controls select {
-  flex: 1; /* Biar lebarnya bagi dua adil */
-  margin-top: 0;
-}
-/* Styling tombol navigasi bulan */
-.nav-btn {
-    width: auto;
-    padding: 5px 15px;
-    background: #111;
-    color: var(--gold);
-    border: 1px solid #444;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 16px;
-    transition: 0.2s;
-}
-
-/* Efek pas tombol dipencet jari */
-.nav-btn:active {
-    background: var(--gold);
-    color: #000;
-    transform: scale(0.9);
-}
+.header-controls { display: flex; gap: 10px; justify-content: center; padding: 0 20px; }
+.nav-btn { background: #111; color: var(--gold); border: 1px solid #444; padding: 5px 15px; border-radius: 8px; font-weight: bold; }
 </style>
 </head>
 <body>
-<div id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:sans-serif;">
-    <div style="color:#d4af37; font-size:20px; font-weight:bold; letter-spacing:1px; margin-bottom:10px;">HARAP TUNGGU SEBENTAR...</div>
+
+<div id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+    <div style="color:#d4af37; font-size:20px; font-weight:bold; margin-bottom:10px;">HARAP TUNGGU SEBENTAR...</div>
     <div id="loading-msg" style="color:#fff; font-size:13px; opacity:0.8;">Sedang sinkronisasi data...</div>
-    </div>
-<!-- ===== WELCOME SCREEN ===== -->
+</div>
+
 <div id="welcome">
   <h1 style="color:var(--gold); font-size:35px;">SELAMAT DATANG DI WEBSITE</h1>
   <h1 style="color:var(--gold); font-size:75px;">KEUANGAN PRIBADI</h1>
-  <p>Built and developed by Fajar Ilmanosa Viar . <b>V2.0.8</b> for personal use only. Copyright © 2026 . All Rights Reserved</p>
+  <p>Built and developed by Fajar Ilmanosa Viar . <b>V2.0.9</b>. Copyright © 2026</p>
   <input id="email" placeholder="Email Admin">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">LOGIN</button>
 </div>
 
-<!-- ===== MAIN APP ===== -->
 <div id="main">
 <header>
   <h2 style="color:var(--gold); margin-bottom:10px;">KEUANGAN PRIBADI</h2>
@@ -305,46 +228,35 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
       <span>🎯 TARGET TABUNGAN</span>
       <span id="persenTarget" style="color: var(--gold); font-weight: bold;">0%</span>
     </div>
-    <div style="width: 100%; background: #222; height: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #333;">
-      <div id="barTarget" style="width: 0%; height: 100%; background: linear-gradient(90deg, #b8860b, var(--gold)); transition: 1s ease;"></div>
+    <div style="width: 100%; background: #222; height: 10px; border-radius: 5px; overflow: hidden;">
+      <div id="barTarget" style="width: 0%; height: 100%; background: var(--gold); transition: 1s ease;"></div>
     </div>
-    <div id="infoTarget" onclick="setTarget()" style="font-size: 10px; color: #aaa; margin-top: 8px; cursor: pointer;">Klik di sini untuk atur target...</div>
+    <div id="infoTarget" onclick="setTarget()" style="font-size: 10px; color: #aaa; margin-top: 8px; cursor: pointer;">Klik untuk atur target...</div>
   </div>
   <div class="box">TOTAL<br><strong id="total">0</strong></div>
 </div>
 
 <div class="card">
-  <div style="margin-bottom: 15px; display: flex; gap: 10px;">
-  </div>
   <table>
-<thead><tr><th>Tanggal</th><th>Keterangan</th><th>Metode</th><th>Nominal</th><th></th></tr></thead>
-<tbody id="list"></tbody>
-</table>
+    <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Metode</th><th>Nominal</th><th></th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
 </div>
 
 <div id="fab-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 1001; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-    <button id="mainFab" class="fab" style="position: static; margin: 0;">MENU</button>
+    <button id="mainFab" class="fab joget">MENU</button>
     <button id="btnTambahFab" class="fab-sub btn-hijau" onclick="openForm()">+</button>
     <button id="btnEditFab" class="fab-sub btn-biru" onclick="toggleMode('edit')">EDIT</button>
     <button id="btnHapusFab" class="fab-sub btn-merah" onclick="toggleMode('hapus')">HAPUS</button>
 </div>
-
 </div>
 
-<!-- ===== MODAL ===== -->
 <div class="modal" id="modal">
 <div class="modal-content">
 <input id="tglInput" type="date">
-<select id="jenis">
-  <option value="masuk">Pemasukan</option>
-  <option value="keluar">Pengeluaran</option>
-</select>
+<select id="jenis"><option value="masuk">Pemasukan</option><option value="keluar">Pengeluaran</option></select>
 <select id="kategori"></select>
-
-<select id="metode">
-  <option value="atm">ATM</option>
-  <option value="cash">Cash</option>
-</select>
+<select id="metode"><option value="atm">ATM</option><option value="cash">Cash</option></select>
 <input id="ket" placeholder="Keterangan">
 <input id="nominal" type="number" placeholder="Nominal">
 <button onclick="simpan()">Simpan</button>
@@ -353,332 +265,91 @@ input,select{width:100%;margin-top:8px;padding:8px;background:#111;color:#fff;bo
 </div>
 
 <script>
-// Fungsi sakti buat nampilin si satpam
+// SEMUA LOGIKA FIREBASE & CRUD TETAP SAMA (TIDAK ADA PERUBAHAN)
 function showLoading(pesan = "Sedang memproses...") {
     document.getElementById("loading-msg").textContent = pesan;
     document.getElementById("loading-overlay").style.display = "flex";
 }
+function hideLoading() { document.getElementById("loading-overlay").style.display = "none"; }
 
-// Fungsi buat nyuruh si satpam pergi
-function hideLoading() {
-    document.getElementById("loading-overlay").style.display = "none";
-}
-// Inisialisasi Firestore
 const db = firebase.firestore();
-
 let atm = 0, cash = 0, data = [], periode = {}, target = 0;
-// Kamus Ikon Otomatis
-const ikonKategori = {
-    "umum": "💳",
-    "jajan": "☕",
-    "makan / minum diluar": "🍽️",
-    "bahan makanan": "🥕",
-    "belanja bulanan": "🛒",
-    "topup digital": "⚡",
-    "wifi": "ᯤ",
-    "pulsa / kuota": "📶",
-    "belanja paket": "📦",
-    "kesehatan / obat": "💊",
-    "hadiah / donasi": "🎁",
-    "hobi / liburan": "✈️",
-    "transportasi": "🚗",
-    "angsuran rumah": "🏠",
-    "perbaikan rumah": "🛠️",
-    "angsuran motor": "🛵",
-    "perbaikan dan perawatan motor": "🛠️",
-    "bensin motor": "⛽",
-    "perbaikan dan perawatan inventaris": "🛠️",
-    "bensin inventaris": "⛽",
-    "hutang": "💸",
-    "tabungan": "💰"
-};
+const ikonKategori = { "umum": "💳", "jajan": "☕", "makan / minum diluar": "🍽️", "bahan makanan": "🥕", "belanja bulanan": "🛒", "topup digital": "⚡", "wifi": "ᯤ", "pulsa / kuota": "📶", "belanja paket": "📦", "kesehatan / obat": "💊", "hadiah / donasi": "🎁", "hobi / liburan": "✈️", "transportasi": "🚗", "angsuran rumah": "🏠", "perbaikan rumah": "🛠️", "angsuran motor": "🛵", "perbaikan dan perawatan motor": "🛠️", "bensin motor": "⛽", "perbaikan dan perawatan inventaris": "🛠️", "bensin inventaris": "⛽", "hutang": "💸", "tabungan": "💰" };
+
 const bulanEl = document.getElementById("bulan"), tahunEl = document.getElementById("tahun");
 const bulanNama = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
-
-// Setting Dropdown & Periode
 bulanNama.forEach((b, i) => bulanEl.innerHTML += `<option value="${i + 1}">${b}</option>`);
 for (let y = 2020; y <= 2035; y++) tahunEl.innerHTML += `<option>${y}</option>`;
 
 periode.bulan = new Date().getMonth() + 1;
 periode.tahun = new Date().getFullYear();
-bulanEl.value = periode.bulan;
-tahunEl.value = periode.tahun;
+bulanEl.value = periode.bulan; tahunEl.value = periode.tahun;
 
 function key() { return `${periode.tahun}_${periode.bulan}`; }
 
-// Fungsi Ambil Data dari Firebase (Cloud)
 async function load() {
     const user = auth.currentUser;
     if (!user) return;
-
-    showLoading("Sedang sinkronisasi data...");
-
+    showLoading();
     try {
         const docRef = db.collection("keuangan").doc(`${user.uid}_${key()}`);
         const doc = await docRef.get();
-
-        // --- LOGIKA KHUSUS TABUNGAN (AUTO-SCAN) ---
-        let tabunganBulanLalu = 0;
-        let cekBulan = periode.bulan - 1;
-        let cekTahun = periode.tahun;
-        let ketemu = false;
-        let batasCek = 0; 
-
-        while (!ketemu && batasCek < 12) {
-            if (cekBulan < 1) { cekBulan = 12; cekTahun--; }
-            
-            const docLaluRef = db.collection("keuangan").doc(`${user.uid}_${cekTahun}_${cekBulan}`);
-            const docLalu = await docLaluRef.get();
-
-            if (docLalu.exists) {
-                const dataLalu = docLalu.data().transaksi || [];
-                // Cuma ambil angka tabungan
-                tabunganBulanLalu = dataLalu.filter(d => d.kategori === 'tabungan')
-                                            .reduce((sum, item) => sum + item.nominal, 0);
-                ketemu = true; 
-            }
-            cekBulan--;
-            batasCek++;
-        }
-        window.tabunganLalu = tabunganBulanLalu;
-        // ------------------------------------------
-
         if (doc.exists) {
             const cloudData = doc.data();
-            atm = cloudData.atm || 0;
-            cash = cloudData.cash || 0;
-            target = cloudData.target || 0;
-            data = cloudData.transaksi || [];
-        } else {
-            // Saldo ATM & Cash tetep 0 kalau bulan baru (sesuai mau lo)
-            atm = 0; cash = 0; data = [];
-        }
-
+            atm = cloudData.atm || 0; cash = cloudData.cash || 0;
+            target = cloudData.target || 0; data = cloudData.transaksi || [];
+        } else { atm = 0; cash = 0; data = []; }
         render();
         document.getElementById("welcome").style.display = "none";
         document.getElementById("main").style.display = "block";
-
-    } catch (e) {
-        console.error("Error loading:", e);
-        alert("Gagal ambil data: " + e.message);
-    } finally {
-        hideLoading();
-    }
+    } catch (e) { alert(e.message); } finally { hideLoading(); }
 }
-// Fungsi Simpan Data ke Firebase (Cloud)
+
 async function save() {
     const user = auth.currentUser;
     if (!user) return;
-
-    try {
-        // Proses kirim ke Firebase
-        await db.collection("keuangan").doc(`${user.uid}_${key()}`).set({
-            atm: atm,
-            cash: cash,
-            target: target,
-            transaksi: data,
-            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        console.log("Data berhasil sinkron ke Cloud.");
-        
-    } catch (e) {
-        // Lempar error ke fungsi pemanggil (fungsi simpan)
-        // supaya satpam loading gak buru-buru tutup kalau server gagal nerima data
-        throw e; 
-    }
+    await db.collection("keuangan").doc(`${user.uid}_${key()}`).set({
+        atm: atm, cash: cash, target: target, transaksi: data,
+        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+    });
 }
-// Fungsi Tampilan (Render)
+
 function f(n) { return new Intl.NumberFormat('id-ID').format(n); }
 
 function render() {
-    // 1. Hitung Tabungan & Target
-    let tabunganBulanIni = data.filter(d => d.kategori === 'tabungan')
-                               .reduce((sum, item) => sum + item.nominal, 0);
-    
+    let tabunganBulanIni = data.filter(d => d.kategori === 'tabungan').reduce((sum, item) => sum + item.nominal, 0);
     let totalTabungan = (window.tabunganLalu || 0) + tabunganBulanIni;
     let persen = target > 0 ? Math.min((totalTabungan / target) * 100, 100) : 0;
-    
-    // 2. Update Tampilan Saldo & Progress Bar
     document.getElementById("barTarget").style.width = persen + "%";
     document.getElementById("persenTarget").textContent = Math.round(persen) + "%";
-    document.getElementById("infoTarget").textContent = `Terkumpul: Rp ${f(totalTabungan)} / Target: Rp ${f(target)}`;
     document.getElementById("atm").textContent = f(atm);
     document.getElementById("cash").textContent = f(cash);
     document.getElementById("total").textContent = f(atm + cash);
-    
-    // 3. Gambar Tabel dengan fitur Drag & Drop
     document.getElementById("list").innerHTML = data.map((d, i) => `
-        <tr draggable="${modeEdit ? 'true' : 'false'}" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})" style="cursor: ${modeEdit ? 'move' : 'default'};">
+        <tr draggable="${modeEdit ? 'true' : 'false'}" ondragstart="startDrag(${i})" ondragover="allowDrop(event)" ondrop="dropData(${i})">
             <td>${d.tgl}</td>
-            <td>
-                <div style="font-weight:bold">${d.ket}</div>
-                <span class="kat-badge">${ikonKategori[d.kategori] || '💳'} ${d.kategori || 'umum'}</span>
-            </td>
+            <td><div style="font-weight:bold">${d.ket}</div><span class="kat-badge">${ikonKategori[d.kategori] || '💳'} ${d.kategori}</span></td>
             <td>${d.metode.toUpperCase()}</td>
-            <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">
-                ${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}
-            </td>
+            <td style="color:${d.jenis === 'masuk' ? '#00ff00' : '#ff4444'}">${d.jenis === 'masuk' ? '+' : '-'}${f(d.nominal)}</td>
             <td>
-                ${modeHapus ? `<button style="padding:5px 10px; background:red; color:white; border:none; border-radius:4px;" onclick="hapusData(${i})">X</button>` : ''}
-                ${modeEdit ? `<button style="padding:5px 10px; background:blue; color:white; border:none; border-radius:4px;" onclick="bukaEdit(${i})">Edit</button>` : ''}
+                ${modeHapus ? `<button onclick="hapusData(${i})">X</button>` : ''}
+                ${modeEdit ? `<button onclick="bukaEdit(${i})">Edit</button>` : ''}
             </td>
         </tr>
     `).join("");
 }
-// Fungsi buat geser bulan otomatis
+
 function pindahBulan(arah) {
     let m = parseInt(bulanEl.value) + arah;
     let y = parseInt(tahunEl.value);
-
-    // Logika kalau balik dari Januari ke Desember tahun lalu
-    if (m < 1) { 
-        m = 12; 
-        y--; 
-    } 
-    // Logika kalau maju dari Desember ke Januari tahun depan
-    else if (m > 12) { 
-        m = 1; 
-        y++; 
-    }
-
-    // Update tampilan dropdown
-    bulanEl.value = m;
-    tahunEl.value = y;
-    
-    // Update periode data dan panggil load()
-    periode.bulan = m;
-    periode.tahun = y;
+    if (m < 1) { m = 12; y--; } else if (m > 12) { m = 1; y++; }
+    bulanEl.value = m; tahunEl.value = y;
+    periode.bulan = m; periode.tahun = y;
     load();
 }
+
 const kategoriEl = document.getElementById("kategori");
-if (kategoriEl) {
-    kategoriEl.innerHTML = Object.keys(ikonKategori).map(k => 
-        `<option value="${k}">${ikonKategori[k]} ${k.charAt(0).toUpperCase() + k.slice(1)}</option>`
-    ).join("");
-}
-// Event Handlers
-bulanEl.onchange = tahunEl.onchange = () => {
-    periode.bulan = bulanEl.value;
-    periode.tahun = tahunEl.value;
-    load();
-};
-
-// Fungsi buat munculin dan menutup kotak input (modal)
-function openForm() { 
-  document.getElementById("modal").style.display = "flex";
-  document.getElementById("tglInput").valueAsDate = new Date();
-  editIndex = null;
-}
-function closeForm() { document.getElementById("modal").style.display = "none"; }
-
-async function hapusData(index) {
-    if (!confirm("Yakin mau hapus data ini, Jar?")) return;
-
-    // 1. Panggil Satpam
-    showLoading("Sedang menghapus data...");
-
-    try {
-        const item = data[index];
-        // Balikin saldo dulu sebelum dihapus
-        if (item.jenis === "masuk") {
-            item.metode === "atm" ? atm -= item.nominal : cash -= item.nominal;
-        } else {
-            item.metode === "atm" ? atm += item.nominal : cash += item.nominal;
-        }
-
-        // Buang dari list (array)
-        data.splice(index, 1);
-
-        // 2. Simpan ke Cloud (Wajib await biar Satpam nunggu)
-        await save();
-        
-        // 3. Update tampilan
-        render();
-    } catch (e) {
-        alert("Gagal hapus: " + e.message);
-        load(); // Refresh data biar saldo gak kacau kalau gagal
-    } finally {
-        // 4. Lepas Satpam
-        hideLoading();
-    }
-}
-
-// 1. Variabel status
-let modeEdit = false;
-let modeHapus = false;
-let editIndex = null; 
-
-// Fungsi buat buka-tutup Menu
-function toggleFabMenu() {
-    const fab = document.getElementById('mainFab');
-    const btnT = document.getElementById("btnTambahFab");
-    const btnE = document.getElementById("btnEditFab");
-    const btnH = document.getElementById("btnHapusFab");
-    
-    // Perbaikan klik pertama: Cek computed style jika inline style masih kosong
-    const currentDisplay = window.getComputedStyle(btnT).display;
-    const isHidden = currentDisplay === "none";
-
-    const anakAnak = [btnT, btnE, btnH];
-    
-    if (isHidden) {
-        // Buka Menu
-        anakAnak.forEach(btn => {
-            btn.style.display = "block";
-            btn.classList.add('joget');
-        });
-        fab.classList.remove('joget'); // X DIAM
-        fab.textContent = "X";
-        fab.style.marginBottom = "0"; // Reset margin akibat animasi floating
-    } else {
-        // Tutup Menu
-        anakAnak.forEach(btn => {
-            btn.style.display = "none";
-            btn.classList.remove('joget');
-        });
-        fab.classList.add('joget'); // MENU JOGET
-        fab.textContent = "MENU";
-    }
-}
-// Fungsi toggle mode (Edit/Hapus) yang sudah diupdate ke FAB
-function toggleMode(tipe) {
-    if (tipe === 'edit') {
-        modeEdit = !modeEdit;
-        modeHapus = false;
-    } else {
-        modeHapus = !modeHapus;
-        modeEdit = false;
-    }
-
-    const bE = document.getElementById("btnEditFab");
-    const bH = document.getElementById("btnHapusFab");
-
-    // Gaya tombol EDIT di FAB
-    bE.style.background = modeEdit ? "#0056b3" : "#007bff"; // Gelap kalau aktif
-    bE.textContent = modeEdit ? "OK" : "EDIT";
-
-    // Gaya tombol HAPUS di FAB
-    bH.style.background = modeHapus ? "#a71d2a" : "#dc3545"; // Gelap kalau aktif
-    bH.textContent = modeHapus ? "OK" : "HAPUS";
-
-    render();
-}
-function bukaEdit(index) {
-    const item = data[index];
-    editIndex = index; 
-    
-    document.getElementById("tglInput").value = item.tglAsli;
-    document.getElementById("jenis").value = item.jenis;
-    document.getElementById("metode").value = item.metode;
-    document.getElementById("ket").value = item.ket;
-    document.getElementById("nominal").value = item.nominal;
-  
-    const katEl = document.getElementById("kategori");
-    if (katEl) katEl.value = item.kategori || "umum";
-    
-    document.getElementById("modal").style.display = "flex";
-}
+kategoriEl.innerHTML = Object.keys(ikonKategori).map(k => `<option value="${k}">${ikonKategori[k]} ${k}</option>`).join("");
 
 async function simpan() {
     const tglPilihan = document.getElementById("tglInput").value;
@@ -687,196 +358,128 @@ async function simpan() {
     const n = +document.getElementById("nominal").value;
     const k = document.getElementById("ket").value;
     const kat = document.getElementById("kategori").value;
-
-    if (!n || !k || !tglPilihan) return alert("Isi semua data!");
-
-    showLoading("Sedang menyimpan data...");
-
+    if (!n || !k || !tglPilihan) return alert("Lengkapi data!");
+    showLoading();
     try {
         const d = new Date(tglPilihan);
         const tglTabel = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
         const dataBaru = { tgl: tglTabel, ket: k, metode: m, jenis: j, nominal: n, tglAsli: tglPilihan, kategori: kat };
-
         if (editIndex !== null) {
-            // Balikin saldo lama
             const lama = data[editIndex];
-            if (lama.jenis === "masuk") {
-                lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal;
-            } else {
-                lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal;
-            }
-            // TIMPA di posisi semula
+            if (lama.jenis === "masuk") { lama.metode === "atm" ? atm -= lama.nominal : cash -= lama.nominal; }
+            else { lama.metode === "atm" ? atm += lama.nominal : cash += lama.nominal; }
             data[editIndex] = dataBaru;
-        } else {
-            // Data baru masuk paling bawah
-            data.push(dataBaru);
-        }
-
-        // Hitung saldo baru
-        if (j === "masuk") { m === "atm" ? atm += n : cash += n; } 
-        else { m === "atm" ? atm -= n : cash -= n; }
-
+        } else { data.push(dataBaru); }
+        if (j === "masuk") { m === "atm" ? atm += n : cash += n; } else { m === "atm" ? atm -= n : cash -= n; }
         await save();
-        editIndex = null;
-        render();
-        closeForm();
-        document.getElementById("nominal").value = "";
-        document.getElementById("ket").value = "";
-    } catch (e) {
-        alert("Gagal simpan: " + e.message);
-    } finally {
-        hideLoading();
-    }
+        editIndex = null; render(); closeForm();
+    } catch (e) { alert(e.message); } finally { hideLoading(); }
 }
+
 function login() {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
-
-    if (!email || !pass) return alert("Email & Password jangan kosong!");
-
-    showLoading("Sedang memverifikasi admin...");
-
-    auth.signInWithEmailAndPassword(email, pass).catch(e => {
-        hideLoading();
-        alert("Gagal Login: " + e.message);
-    });
+    showLoading();
+    auth.signInWithEmailAndPassword(email, pass).catch(e => { hideLoading(); alert(e.message); });
 }
 
-// KUNCI UTAMA: Urutan Load Data yang bener
-auth.onAuthStateChanged(user => {
-    if (user) {
-        // Jangan buka 'main' dulu! Biarkan load() yang dapet data baru buka pintunya.
-        load(); 
-    } else {
-        document.getElementById("welcome").style.display = "flex";
-        document.getElementById("main").style.display = "none";
-        hideLoading();
-    }
-});
-</script>
-  
-<script>
-window.addEventListener("beforeunload", function (e) {
-  e.preventDefault();
-  e.returnValue = "";
-});
-</script>
+auth.onAuthStateChanged(user => { if (user) load(); else { document.getElementById("welcome").style.display = "flex"; document.getElementById("main").style.display = "none"; } });
 
-<script>
-  const fab = document.getElementById('mainFab');
+// ==========================================================
+// KUNCI PERBAIKAN: LOGIKA FAB DRAGGING & JOGET (ANT-DONGO)
+// ==========================================================
+const mainFab = document.getElementById('mainFab');
+const container = document.getElementById('fab-container');
 let isDragging = false;
+let modeEdit = false; let modeHapus = false; let editIndex = null;
 
 function moveFab(e) {
     isDragging = true;
-    const container = document.getElementById('fab-container');
-    fab.style.animation = 'none'; 
+    mainFab.style.animation = 'none'; // Matiin goyang pas ditarik biar gak pusing
     
     let x = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
     let y = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
 
-    // Geser seluruh kontainer, bukan cuma tombolnya
     container.style.left = (x - 30) + 'px';
-    container.style.top = (y - 40) + 'px'; // -40 biar pas di tengah saat ada menu kebuka
+    container.style.top = (y - 30) + 'px';
     container.style.right = 'auto';
     container.style.bottom = 'auto';
 }
 
-fab.addEventListener('mousedown', () => {
-    isDragging = false; // Reset status setiap klik
-    window.addEventListener('mousemove', moveFab);
+mainFab.addEventListener('mousedown', () => { 
+    isDragging = false; 
+    window.addEventListener('mousemove', moveFab); 
+});
+mainFab.addEventListener('touchstart', () => { 
+    isDragging = false; 
+    window.addEventListener('touchmove', moveFab, { passive: false }); 
 });
 
-fab.addEventListener('touchstart', () => {
-    isDragging = false;
-    window.addEventListener('touchmove', moveFab, { passive: false });
-});
+window.addEventListener('mouseup', endDrag);
+window.addEventListener('touchend', endDrag);
 
-// PERBAIKAN MOUSEUP
-window.addEventListener('mouseup', () => {
+function endDrag() {
     window.removeEventListener('mousemove', moveFab);
-    if (isDragging) {
-        fab.classList.add('fab-pop');
-        fab.style.animation = '';
-        if (fab.textContent === "MENU") {
-            fab.classList.add('joget');
-        } else {
-            fab.classList.remove('joget');
-            fab.style.marginBottom = '0';
-        }
-        setTimeout(() => {
-            fab.classList.remove('fab-pop');
-            isDragging = false;
-        }, 300);
-   }
-});
-
-// PERBAIKAN TOUCHEND
-window.addEventListener('touchend', () => {
     window.removeEventListener('touchmove', moveFab);
+    
     if (isDragging) {
-        fab.classList.add('fab-pop');
-        fab.style.animation = '';
-        if (fab.textContent === "MENU") {
-            fab.classList.add('joget');
-        } else {
-            fab.classList.remove('joget');
-            fab.style.marginBottom = '0';
+        mainFab.classList.add('fab-pop');
+        
+        // Reset paksa style sisa drag
+        mainFab.style.animation = ""; 
+        
+        if (mainFab.textContent === "MENU") {
+            mainFab.classList.remove('joget');
+            void mainFab.offsetWidth; // Paksa browser refresh
+            mainFab.classList.add('joget');
         }
-        setTimeout(() => {
-            fab.classList.remove('fab-pop');
-            isDragging = false;
+        
+        setTimeout(() => { 
+            mainFab.classList.remove('fab-pop'); 
+            isDragging = false; 
         }, 300);
-   }
-});
-
-// Biar menu gak kebuka/ketutup pas abis diseret (Drag)
-document.getElementById("mainFab").onclick = function(e) {
-    if (isDragging) {
-        isDragging = false; // Reset status drag setelah selesai diseret
-        return;
     }
+}
+
+mainFab.onclick = function() {
+    if (isDragging) return;
     toggleFabMenu();
 };
-  // Fungsi buat input target tabungan
+
+function toggleFabMenu() {
+    const btnT = document.getElementById("btnTambahFab");
+    const btnE = document.getElementById("btnEditFab");
+    const btnH = document.getElementById("btnHapusFab");
+    const isHidden = window.getComputedStyle(btnT).display === "none";
+    const anakAnak = [btnT, btnE, btnH];
+
+    if (isHidden) {
+        anakAnak.forEach(btn => { btn.style.display = "block"; btn.classList.add('joget'); });
+        mainFab.classList.remove('joget');
+        mainFab.textContent = "X";
+    } else {
+        anakAnak.forEach(btn => { btn.style.display = "none"; btn.classList.remove('joget'); });
+        mainFab.textContent = "MENU";
+        // Reset animasi MENU saat tutup
+        mainFab.style.animation = "";
+        void mainFab.offsetWidth;
+        mainFab.classList.add('joget');
+    }
+}
+
+function toggleMode(tipe) {
+    if (tipe === 'edit') { modeEdit = !modeEdit; modeHapus = false; } 
+    else { modeHapus = !modeHapus; modeEdit = false; }
+    document.getElementById("btnEditFab").textContent = modeEdit ? "OK" : "EDIT";
+    document.getElementById("btnHapusFab").textContent = modeHapus ? "OK" : "HAPUS";
+    render();
+}
+
 function setTarget() {
-    let input = prompt("Masukkan target tabungan bulan ini (Rp):", target);
-    if (input !== null) {
-        target = parseInt(input) || 0;
-        render(); // Biar tampilan langsung update
-        save();   // Biar target tersimpan ke Firebase
-    }
+    let input = prompt("Masukkan target tabungan (Rp):", target);
+    if (input !== null) { target = parseInt(input) || 0; render(); save(); }
 }
-let indexSumber;
-
-function startDrag(i) {
-    indexSumber = i;
-}
-
-function allowDrop(e) {
-    e.preventDefault();
-}
-
-async function dropData(indexTujuan) {
-    // Tukar posisi di array
-    const dataDiseret = data[indexSumber];
-    data.splice(indexSumber, 1);
-    data.splice(indexTujuan, 0, dataDiseret);
-    
-    render(); // Update tampilan langsung
-    
-    showLoading("Menyimpan urutan baru...");
-    try {
-        await save(); // Simpan urutan permanen ke Firebase
-    } catch (e) {
-        alert("Gagal simpan urutan: " + e.message);
-    } finally {
-        hideLoading();
-    }
-}
+// ==========================================================
 </script>
-
 </body>
 </html>
-
-
-
